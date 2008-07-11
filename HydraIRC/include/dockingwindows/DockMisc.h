@@ -18,7 +18,7 @@
 #pragma once
 
 #ifndef __ATLMISC_H__
-        #error dockmisk.h requires atlmisc.h to be included first
+        #error dockmisc.h requires atlmisc.h to be included first
 #endif
 
 #include <cassert>

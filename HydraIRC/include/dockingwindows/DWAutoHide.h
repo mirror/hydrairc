@@ -949,7 +949,7 @@ protected:
 public:
 	CAutoHidePaneImpl()
 	{
-		m_caption.SetPinButtonState(CPinIcons::States::sUnPinned/*CCaption::PinButtonStates::sPinned*/);
+		m_caption.SetPinButtonState(CPinIcons::sUnPinned/*CCaption::PinButtonStates::sPinned*/);
 	}
 protected:
     CSide Orientation() const
@@ -1266,9 +1266,9 @@ protected:
 };
 
 template <class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits>
-class CAutoHideManager : public CAutoHidePaneImpl<CAutoHideManager,CWindow,TAutoHidePaneTraits>
+class CAutoHideManager : public CAutoHidePaneImpl<CAutoHideManager<TAutoHidePaneTraits>,CWindow,TAutoHidePaneTraits>
 {
-	typedef CAutoHidePaneImpl<CAutoHideManager,CWindow,TAutoHidePaneTraits>	baseClass;
+	typedef CAutoHidePaneImpl<CAutoHideManager<TAutoHidePaneTraits>,CWindow,TAutoHidePaneTraits>	baseClass;
 	typedef CAutoHideManager<TAutoHidePaneTraits>					thisClass;
 protected:
 	typedef CAutoHideBar::CSide		CSide;
