@@ -179,7 +179,7 @@ inline HPROPERTY PropCreateCategory(LPCTSTR pstrName, LPARAM lParam=0)
 template< class T, class TBase = CListBox, class TWinTraits = CWinTraitsOR<LBS_OWNERDRAWVARIABLE|LBS_NOTIFY> >
 class ATL_NO_VTABLE CPropertyListImpl : 
    public CWindowImpl< T, TBase, TWinTraits >,
-   public COwnerDraw< CPropertyListImpl >
+   public COwnerDraw< CPropertyListImpl<TBase> >
 {
 public:
 	DECLARE_WND_SUPERCLASS(NULL, TBase::GetWndClassName())
@@ -501,7 +501,7 @@ public:
       MESSAGE_HANDLER(WM_USER_PROP_EXPAND, OnExpand);
       MESSAGE_HANDLER(WM_USER_PROP_COLLAPSE, OnCollapse);
       REFLECTED_COMMAND_CODE_HANDLER(LBN_SELCHANGE, OnSelChange)
-      CHAIN_MSG_MAP_ALT(COwnerDraw<CPropertyListImpl>, 1)
+      CHAIN_MSG_MAP_ALT(COwnerDraw<CPropertyListImpl<TBase>>, 1)
       DEFAULT_REFLECTION_HANDLER()
    END_MSG_MAP()
 

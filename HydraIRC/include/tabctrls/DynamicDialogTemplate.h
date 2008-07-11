@@ -30,6 +30,8 @@
 // To find out more about in-memory dialog templates, see the MSDN library
 // for a description of DLGTEMPLATE and DLGITEMTEMPLATE
 
+namespace DynamicDialog {
+
 struct DynamicDialogItemSize
 {
 public:
@@ -244,10 +246,9 @@ public:
 			// Get a pointer to the "end"
 			BYTE* pOffset = (BYTE*)pDialogTemplate + m_bytesUsed;
 
-			// align DLGITEMTEMPLATE on DWORD boundary
-
-			// Fill out the structure and following bytes for the control
-			DLGITEMTEMPLATE* pDialogItem = (DLGITEMTEMPLATE*) Align_DWORD ((WORD*)pOffset);
+			// Fill out the structure and following bytes for the control.
+			// DLGITEMTEMPLATE structures should be aligned on DWORD boundaries.
+			DLGITEMTEMPLATE* pDialogItem = (DLGITEMTEMPLATE*) (((DWORD_PTR)pOffset + 3) & ~3);
 			pDialogItem->style = style;
 			pDialogItem->dwExtendedStyle = dwExtendedStyle;
 			pDialogItem->x  = x;
@@ -338,7 +339,7 @@ public:
 			x, y, cx, cy,
 			id,
 			text, text ? ::lstrlenW(text) + 1 : 0,
-			classAtom, classAtomWordCount);
+			(const wchar_t*)classAtom, classAtomWordCount);
 	}
 	bool AddControl(
 		    DWORD style, DWORD dwExtendedStyle,
@@ -352,7 +353,7 @@ public:
 			dialogItemSize.x, dialogItemSize.y, dialogItemSize.cx, dialogItemSize.cy,
 			id,
 			text, text ? ::lstrlenW(text) + 1 : 0,
-			classAtom, classAtomWordCount);
+			(const wchar_t*)classAtom, classAtomWordCount);
 	}
 
 	bool AddButtonControl(
@@ -455,14 +456,6 @@ public:
 	{
 		return this->AddControl(style, dwExtendedStyle, dialogItemSize,
 			id, text, eClassAtom_ComboBox);
-	}
-
-	static inline unsigned short* Align_DWORD(unsigned short* pWordPtr)
-	{
-		ULONG ul = 3UL + PtrToUlong(pWordPtr);
-		ul >>= 2;
-		ul <<= 2;
-		return (unsigned short*)ULongToPtr(ul);
 	}
 };
 
@@ -477,11 +470,18 @@ class CDynamicDialogExTemplate
 #if (_ATL_VER >= 0x0700)
 
 // Important!  If ATL::CDialogImpl ever changes, reflect those changes here.
-template <class T, class TBase = CWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
-class ATL_NO_VTABLE CDynamicDialogImpl : public CDialogImplBaseT< TBase >
+//  We don't inherit from CDialogImpl at all and completely duplicate (and
+//  appropriately modify) everything it does.
+template <class T, class TBase = ATL::CWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
+class ATL_NO_VTABLE CDynamicDialogImpl : public ATL::CDialogImplBaseT< TBase >
 {
 protected:
 	TDynamicDialogTemplate m_dynamicDialogTemplate;
+
+// Overrideables
+public:
+	// You always need to override ConstructDialogResource
+	//bool ConstructDialogResource(void) { }
 
 public:
 #ifdef _DEBUG
@@ -492,8 +492,12 @@ public:
 	INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL)
 	{
 		ATLASSERT(m_hWnd == NULL);
+
+		T* pT = static_cast<T*>(this);
+		pT->ConstructDialogResource();
+
 		ATLASSERT((bool)m_dynamicDialogTemplate);
-		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
+		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = true;
 #endif //_DEBUG
@@ -512,8 +516,12 @@ public:
 	HWND Create(HWND hWndParent, LPARAM dwInitParam = NULL)
 	{
 		ATLASSERT(m_hWnd == NULL);
+
+		T* pT = static_cast<T*>(this);
+		pT->ConstructDialogResource();
+
 		ATLASSERT((bool)m_dynamicDialogTemplate);
-		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
+		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = false;
 #endif //_DEBUG
@@ -538,6 +546,100 @@ public:
 };
 
 #endif // (_ATL_VER >= 0x0700)
+
+
+// CDynamicPropertyPageImpl inherits from CPropertyPageImpl, but it uses CDynamicDialogTemplate
+//  to construct an in-memory dialog resource (instead of using a dialog template whose resource
+//  identifier is aliased by "IDD" in the derived class).  This in-memory dialog resource is created
+//  either during a "Create" call, or when there's an implicit or explict cast to PROPSHEETPAGE*
+//  (such as when "AddPage" is called on the sheet with the page as the argument).
+
+template <class T, class TBase = WTL::CPropertyPageWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
+class ATL_NO_VTABLE CDynamicPropertyPageImpl : public WTL::CPropertyPageImpl< T, TBase >
+{
+protected:
+	typedef WTL::CPropertyPageImpl< T, TBase > baseClass;
+
+protected:
+	bool m_dialogResourceInitialized;
+	TDynamicDialogTemplate m_dynamicDialogTemplate;
+
+// Constructors
+public:
+	CDynamicPropertyPageImpl(ATL::_U_STRINGorID title = (LPCTSTR)NULL) :
+		baseClass(title),
+		m_dialogResourceInitialized(false)
+	{
+		// We do this after the constructor but before
+		// the property page is created.
+		//T* pT = static_cast<T*>(this);
+		//pT->ConstructDialogResource();
+		//m_psp.dwFlags |= PSP_DLGINDIRECT;
+		//m_psp.pResource = m_dynamicDialogTemplate;
+	}
+
+// Enumerations
+public:
+	// Since we're going to provide the dialog template dynamically,
+	// have IDD be 0.  We're still going to inherit from CPropertyPageImpl
+	// so this will be used in its constructor (but we'll change things
+	// in InitializeDialogResource so "pResource" is used instead of "pszTemplate").
+	enum { IDD = 0 };
+
+// CPropertyPageImpl Overrides:
+public:
+	// This Create() isn't called by WTL at all, but just in case someone else
+	// calls it, we need to override it to ensure the dialog resource is initialized.
+	HPROPSHEETPAGE Create()
+	{
+		T* pT = static_cast<T*>(this);
+		pT->InitializeDialogResource();
+
+		return baseClass::Create();
+	}
+
+public:
+	// We'll do a post-constructor construction by overriding the
+	//  operator PROPSHEETPAGE*(), and calling "ConstructDialogResource"
+	//  which is overrideable.  This should get called when you do
+	//  "AddPage", "InsertPage", . The reason we need ConstructDialogResource
+	//  to be called outside of the constructor is because we want it
+	//  to be overrideable, and have the version in the most derived class called.
+	//  In the case of a normal dialog, we can override DoModal and Create.
+	//  However, with a property page, those functions don't get called
+	//  (they do get called by the sheet though, so something might be added
+	//  there to call some kind of "FinalConstruct" like with COM).
+	//operator PROPSHEETPAGE*() { return &m_psp; }
+	operator PROPSHEETPAGE*()
+	{
+		T* pT = static_cast<T*>(this);
+		pT->InitializeDialogResource();
+
+		return baseClass::operator PROPSHEETPAGE*();
+	}
+
+// Overrideables
+public:
+	// You always need to override ConstructDialogResource
+	//bool ConstructDialogResource(void) { }
+
+	void InitializeDialogResource(void)
+	{
+		if(!m_dialogResourceInitialized)
+		{
+			m_dialogResourceInitialized = true;
+
+			T* pT = static_cast<T*>(this);
+			if(pT->ConstructDialogResource())
+			{
+				m_psp.dwFlags |= PSP_DLGINDIRECT;
+				m_psp.pResource = m_dynamicDialogTemplate;
+			}
+		}
+	}
+};
+
+}; // namespace DynamicDialog
 
 
 #endif //__DynamicDialogTemplate_h__

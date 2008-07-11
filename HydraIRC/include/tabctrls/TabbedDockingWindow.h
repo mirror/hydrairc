@@ -21,11 +21,11 @@
 #endif
 
 class CTabbedDockingWindow :
-	public CTabbedFrameImpl<CTabbedDockingWindow, CDotNetTabCtrl<CTabViewTabItem>, dockwins::CTitleDockingWindowImpl< CTabbedDockingWindow,CWindow,dockwins::COutlookLikeTitleDockingWindowTraits> >
+	public CTabbedFrameImpl<CTabbedDockingWindow, CDotNetTabCtrl<CTabViewTabItem>, dockwins::CTitleDockingWindowImpl< CTabbedDockingWindow,ATL::CWindow,dockwins::COutlookLikeTitleDockingWindowTraits> >
 {
 protected:
 	typedef CTabbedDockingWindow thisClass;
-	typedef CTabbedFrameImpl<CTabbedDockingWindow, CDotNetTabCtrl<CTabViewTabItem>, dockwins::CTitleDockingWindowImpl< CTabbedDockingWindow,CWindow,dockwins::COutlookLikeTitleDockingWindowTraits> > baseClass;
+	typedef CTabbedFrameImpl<CTabbedDockingWindow, CDotNetTabCtrl<CTabViewTabItem>, dockwins::CTitleDockingWindowImpl< CTabbedDockingWindow,ATL::CWindow,dockwins::COutlookLikeTitleDockingWindowTraits> > baseClass;
 
 // Constructors
 public:
@@ -86,11 +86,11 @@ public:
 #ifdef DF_AUTO_HIDE_FEATURES
 
 class CTabbedAutoHideDockingWindow :
-	public dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits>
+	public dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,ATL::CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits>
 {
 protected:
 	typedef CTabbedAutoHideDockingWindow	thisClass;
-	typedef dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits> baseClass;
+	typedef dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,ATL::CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits> baseClass;
 
 // Member variables
 protected:
@@ -171,7 +171,12 @@ public:
 			HICON hIcon = (HICON)::SendMessage(m_hWndClient, WM_GETICON, ICON_SMALL, 0L);
 			if(hIcon==NULL)
 			{
+// need conditional code because types don't match in winuser.h
+#ifdef _WIN64
 				hIcon = (HICON)::GetClassLongPtr(m_hWndClient, GCLP_HICONSM);
+#else
+				hIcon = (HICON)LongToHandle(::GetClassLongPtr(m_hWndClient, GCLP_HICONSM));
+#endif
 			}
 			if(hIcon)
 			{
@@ -241,6 +246,40 @@ public:
 	int GetMenuID(void) const
 	{
 		return m_nMenuID;
+	}
+
+	BOOL IsOwnerDockBarVisible()
+	{
+		HWND hWnd = this->GetOwnerDockingBar();
+		return hWnd && ::IsWindowVisible(hWnd);
+	}
+
+	BOOL IsCurrentDockBarVisible()
+	{
+		HWND hWnd = m_pos.hdr.hBar;
+		return hWnd && ::IsWindowVisible(hWnd);
+	}
+
+	bool GetCurrentDockingPosition(dockwins::DFDOCKPOS* dockPos)
+	{
+		if(dockPos == NULL)
+		{
+			return false;
+		}
+
+		::CopyMemory(dockPos, &m_pos, sizeof(m_pos));
+		return true;
+	}
+
+	bool SetCurrentDockingPosition(dockwins::DFDOCKPOS* dockPos)
+	{
+		if(dockPos == NULL)
+		{
+			return false;
+		}
+
+		::CopyMemory(&m_pos, dockPos, sizeof(m_pos));
+		return true;
 	}
 
 // Message Handling
@@ -435,6 +474,11 @@ public:
 		SetWindowLong( GWL_STYLE , dwStyle);
 		
 		baseClass::OnUndocked(hBar);
+	}
+	virtual void GetMinMaxInfo(LPMINMAXINFO pMinMaxInfo) const
+	{
+		pMinMaxInfo->ptMinTrackSize.y = 100;
+		pMinMaxInfo->ptMinTrackSize.x = 100;
 	}
 };
 
