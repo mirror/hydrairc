@@ -244,6 +244,68 @@
     <Server name="irc.volga.ru" description="DALnet" port="6667" password="" network="10074"/>
     <Server name="vtx.ru" description="DALnet" port="6667" password="" network="10074"/>
     <Server name="dalnet.dp.ua" description="DALnet" port="6667" password="" network="10074"/>
+    
+    <!-- Efnet, updated via /links on irc.blessed.net 24/4/2007 -->
+    <Server name="backup.services.int" description="EFnet" port="6667" password="" network="10362"/>  
+    <Server name="chat.efnet.org" description="EFnet" port="6667" password="" network="10362"/>  
+    <Server name="efnet.cs.hut.fi" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="efnet.demon.co.uk" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="efnet.ipv6.xs4all.nl" description="EFnet" port="6667" password="" network="10362"/>  
+    <Server name="efnet.port80.se" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="efnet.teleglobe.net" description="EFnet" port="6667" password="" network="10362"/>  
+    <Server name="efnet.xs4all.nl" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="hub.dk" description="EFnet" port="6667" password="" network="10362"/>          
+    <Server name="hub.efnet.nl" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="hub.efnet.us" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="hub.il" description="EFnet" port="6667" password="" network="10362"/>          
+    <Server name="hub.se" description="EFnet" port="6667" password="" network="10362"/>          
+    <Server name="hub.uk" description="EFnet" port="6667" password="" network="10362"/>          
+    <Server name="irc.Prison.NET" description="EFnet" port="6667" password="" network="10362"/>  
+    <Server name="irc.ac.za" description="EFnet" port="6667" password="" network="10362"/>       
+    <Server name="irc.arcti.ca" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="irc.blackened.com" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.blessed.net" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="irc.choopa.ca" description="EFnet" port="6667" password="" network="10362"/>   
+    <Server name="irc.choopa.net" description="EFnet" port="6667" password="" network="10362"/>  
+    <Server name="irc.colosolutions.net" description="EFnet" port="6667" password="" network="10362"/>  
+    <Server name="irc.dataphone.se" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.daxnet.no" description="EFnet" port="6667" password="" network="10362"/>   
+    <Server name="irc.dks.ca" description="EFnet" port="6667" password="" network="10362"/>      
+    <Server name="irc.du.se" description="EFnet" port="6667" password="" network="10362"/>       
+    <Server name="irc.easynews.com" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.efnet.ch" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="irc.efnet.fr" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="irc.efnet.nl" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="irc.efnet.no" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="irc.efnet.pl" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="irc.efnet.ru" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="irc.eversible.com" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.he.net" description="EFnet" port="6667" password="" network="10362"/>      
+    <Server name="irc.homelien.no" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="irc.igs.ca" description="EFnet" port="6667" password="" network="10362"/>      
+    <Server name="irc.inet.tele.dk" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.inter.net.il" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.mindspring.com" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.mzima.net" description="EFnet" port="6667" password="" network="10362"/>   
+    <Server name="irc.nac.net" description="EFnet" port="6667" password="" network="10362"/>     
+    <Server name="irc.pte.hu" description="EFnet" port="6667" password="" network="10362"/>      
+    <Server name="irc.ptptech.com" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="irc.servercentral.net" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.shoutcast.com" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc.umich.edu" description="EFnet" port="6667" password="" network="10362"/>   
+    <Server name="irc.umn.edu" description="EFnet" port="6667" password="" network="10362"/>     
+    <Server name="irc.vel.net" description="EFnet" port="6667" password="" network="10362"/>     
+    <Server name="irc.wh.verio.net" description="EFnet" port="6667" password="" network="10362"/>
+    <Server name="irc2.choopa.net" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="ircd.arcti.ca" description="EFnet" port="6667" password="" network="10362"/>   
+    <Server name="ircd.choopa.net" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="ircd.efnet.no" description="EFnet" port="6667" password="" network="10362"/>   
+    <Server name="ircd.he.net" description="EFnet" port="6667" password="" network="10362"/>     
+    <Server name="ircd.lagged.org" description="EFnet" port="6667" password="" network="10362"/> 
+    <Server name="ircd.llnw.net" description="EFnet" port="6667" password="" network="10362"/>   
+    <Server name="ircd.nac.net" description="EFnet" port="6667" password="" network="10362"/>    
+    <Server name="services.int" description="EFnet" port="6667" password="" network="10362"/>        
+    <!--
     <Server name="irc.efnet.net" description="EFnet" port="6667" password="" network="10362"/>
     <Server name="efnet.skynet.be" description="EFnet" port="6667" password="" network="10362"/>
     <Server name="irc.arcti.ca" description="EFnet" port="6667" password="" network="10362"/>
@@ -298,6 +360,7 @@
     <Server name="irc.servercentral.net" description="EFnet" port="6667" password="" network="10362"/>
     <Server name="irc.limelight.us" description="EFnet" port="6667" password="" network="10362"/>
     <Server name="services.xo" description="EFnet" port="6667" password="" network="10362"/>
+    -->
     <Server name="Buccaneers.Elite-Irc.Net" description="Elite-IRC" port="6667" password="" network="10104"/>
     <Server name="Crystal.Elite-Irc.Net" description="Elite-IRC" port="6667" password="" network="10104"/>
     <Server name="Darwin.Elite-Irc.Net" description="Elite-IRC" port="6667" password="" network="10104"/>

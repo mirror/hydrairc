@@ -15,8 +15,112 @@ Key:
   (name) - the name of the person running HydraIRC who first reported
   the problem or requested the feature
 
-14/Apr/2006 - PM (0.3.152) - Experimental
+25/July/2008 - PM (0.3.164) - Experimental
+  * Added /listplugins - outputs plugin information to "Output" view.   
+  + Made the winamp button appear on the toolbar again (broken in 0.3.162)
+  * Stripping of winamp tag changed in order to be compatible with Media Monkey (finally!)
+  * Re-worked the layout of the prefs window and it's treeview in preperation for some serious work
+  * Changed the default format for the winamp plugin so it doesn't say winamp as no-one seems to use
+    winamp these days anyway :D
+
+25/July/2008 - PM (0.3.163) - Experimental
+  * Added /omsg to alias plugin (same as /raw PRIVMSG @<channel> :<message>)
+
+25/February/2008 - PM (0.3.162) - Experimental
   SVN Revision ??
+  . Compiled with VS 2008 Team Studio
+  . Compiled with WTL 8 - 7161
+  . Compiled with ATL 9 - 70425
+  
+  - TODO: Currently the Winamp toolbar icon no-longer appears, cause unknown, use /winamp instead for now
+
+17/July/2007 - PM (0.3.161) - Experimental
+  SVN Revision 95
+  Hydra
+  + Users receiving files from other clients on systems with an external ip with the first octet higher
+    than 127 would have been unable to receive the file due to a signed bit problem in the DCC file transfer
+    code.
+  * Changed "Router Address" to "External Address", as it makes more sense especially in this day and age.
+
+05/May/2007 - PM (0.3.160) - Released
+  SVN Revision 94
+  Hydra
+  * Reverted the multi-column treeview code back to the old single column treeview code in the connect dialog
+    until a fix for the missing tvn_* messages is found.
+
+24/April/2007 - PM (0.3.159) - Experimental
+  SVN Revision 90
+  Hydra
+  * Added a multi column treeview to the connect dialog so it shows the description for the server
+  * Updated the response handler for /links so that it updates the list of servers for the network that
+    the /links command was issued on.  Prefs are not saved automatically, so to get the updated server
+    list stored enter prefs and click ok.
+  * Fixed two minor memory leaks in the prefs code.
+  * Updated quit messages :D
+
+24/April/2007 - PM (0.3.158) - Experimental
+  SVN Revision 87
+  Hydra
+  * Recompiled with VS.Net 2005 SP1 which includes updated CATLRegExp code that hopefully handles
+    high-ascii characters properly (and about time too Microsoft...)
+
+
+10/April/2007 - PM (0.3.157) - Experimental
+  SVN Revision 87
+  Hydra
+  * Fixing a reconnect bug introduced in 0.3.156 (while not re-introducing the 
+    "socket disconnected" bug)
+  
+07/April/2007 - PM (0.3.156) - Experimental
+  SVN Revision 85
+  Hydra
+  * Added a fix for "socket disconnected" when reconnecting to a server.
+  * Added code back in that hides tabs for hidden windows that got lost when Daniel Bowen's updated
+    tab code got added in 0.3.153
+  * Updated some keyboard accelerator (shortcut) keys.
+  * Added /timer and /stoptimer commands.  To use a timer create a command profile and then use
+    /timer <delay in seconds> <command profile name>
+    To stop it, use
+    /stoptimer <command profile name>
+    Timers are run until stopped, whether the window they were started in is connected or not.
+    Timers can start other timers
+    Timers can stop other timers
+    The two commands ONLY work on timers for the current window.
+    When a window is closed all it's timers are stopped.
+    
+    /timer in combination with /getnick can be quite handy from troublesome nick-stealers :)
+  * Changed handling of ERR_NEEDREGGEDNICK as freenode servers seem to send a message when joining
+    a channel that caused hydrairc problems.  This might cause other issues when a channel really
+    does need a registered nick, needs further testing.
+
+05/April/2007 - PM (0.3.155) - Experimental, debug only release.
+  SVN Revision 84
+  Hydra
+  * Added a fix for a crash caused by malicious users sending malformed dcc file transfer requests
+  * Added a fix for a crash which could be caused remotely if the user was connected to a non-rfc
+    compliant irc server *and* a malicious user sent a really long malformed message to you.
+    (Basically, a fix for something that'd never happen in real life, but *sigh* these security
+    'experts' have nothing better to do, next time, a source diff an an email would be nice...)
+
+06/October/2006 - PM (0.3.154) - Experimental
+  Hydra
+  * Some changes I can't remember. :D  I'll update this file when I've looked at the svn changelog :D
+  
+21/May/2006 - PM (0.3.153) - Experimental
+  SVN Revision 80
+  Hydra
+  * Updated to WTL 8.0
+  * Updated Daniel Bowen's tab controls
+  * Compiles in Visual Studio 2005, older versions are now unsupported by me
+    some things may be broken:
+    1) hiding tabs
+    2) possible crashes when closing windows, might still need to 
+       migrate changes from atlframe.h wtl 7.5 altered includes to
+       a copy of the respective wtl 8.0 code
+  
+
+14/Apr/2006 - PM (0.3.152) - Experimental
+  SVN Revision 79
   Hydra
   * Added a new pref: "Activate Link On Double-Click", Default: FALSE
     By default you open now URL's with a single click, to restore the old
@@ -221,7 +325,7 @@ Key:
     is configured to play a sound, but the filename is blank then the default
     beep will play instead. (zann)
   * Upgraded the docking framework and the tabs to the latest version
-    (from Daniel Bowden's article on code project which contains Sergey's
+    (from Daniel Bowen's article on code project which contains Sergey's
     original code and lots of updates)
   * Added the MDI tabs back in, let me know if you have any issues.
     I rewrote the window hiding code a while back, and re-implemented the
@@ -825,7 +929,7 @@ Key:
 
 18/December/2003 - PM (0.3.111) - Experimental - for #HydraIRC users only.
   Hydra
-  * Updated Tabbed docking framework to Daniel Bowden's latest code,
+  * Updated Tabbed docking framework to Daniel Bowen's latest code,
     reapplied my own fixes to it and switched to using VC7 like docking boxes
     rather the the old-skool Outlook like docking boxes.
     
