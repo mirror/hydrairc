@@ -69,7 +69,7 @@
 
 ;Here we go! Installer script starts here :)
 !define PRODUCT "HydraIRC"
-!define VERSION "0.3.152"
+!define VERSION "0.3.164"
 Name "${PRODUCT}"
 
 ;Installer will be compiled into. Don't forget to update VERSION above!
