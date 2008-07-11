@@ -1,0 +1,76 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HydraIRC", "HydraIRC\HydraIRC.vcproj", "{935A6F55-1AF1-4AE0-BE27-C7D5D339A9A8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{08BC321F-3476-43F9-9989-FD9B1DA2A079} = {08BC321F-3476-43F9-9989-FD9B1DA2A079}
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA} = {EE874E3B-5E71-444D-9EF1-44F32D53A1BA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2", "HydraIRC\libs\libxml2\win32\dsp\libxml2.vcproj", "{08BC321F-3476-43F9-9989-FD9B1DA2A079}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_Default", "HydraIRC\Plugins\Default\Default.vcproj", "{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA} = {EE874E3B-5E71-444D-9EF1-44F32D53A1BA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HydraIRCPlugin", "HydraIRC\libs\HydraIRCPlugin\HydraIRCPlugin.vcproj", "{EE874E3B-5E71-444D-9EF1-44F32D53A1BA}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_WinAMP", "HydraIRC\Plugins\WinAMP\WinAMP.vcproj", "{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA} = {EE874E3B-5E71-444D-9EF1-44F32D53A1BA}
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA} = {EE874E3B-5E71-444D-9EF1-44F32D53A1BA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_Alias", "HydraIRC\Plugins\Alias\Alias.vcproj", "{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA} = {EE874E3B-5E71-444D-9EF1-44F32D53A1BA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_Uptime", "HydraIRC\Plugins\Uptime\Uptime.vcproj", "{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA} = {EE874E3B-5E71-444D-9EF1-44F32D53A1BA}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{935A6F55-1AF1-4AE0-BE27-C7D5D339A9A8}.Debug.ActiveCfg = Debug|Win32
+		{935A6F55-1AF1-4AE0-BE27-C7D5D339A9A8}.Debug.Build.0 = Debug|Win32
+		{935A6F55-1AF1-4AE0-BE27-C7D5D339A9A8}.Release.ActiveCfg = Release|Win32
+		{935A6F55-1AF1-4AE0-BE27-C7D5D339A9A8}.Release.Build.0 = Release|Win32
+		{08BC321F-3476-43F9-9989-FD9B1DA2A079}.Debug.ActiveCfg = Debug|Win32
+		{08BC321F-3476-43F9-9989-FD9B1DA2A079}.Debug.Build.0 = Debug|Win32
+		{08BC321F-3476-43F9-9989-FD9B1DA2A079}.Release.ActiveCfg = Release|Win32
+		{08BC321F-3476-43F9-9989-FD9B1DA2A079}.Release.Build.0 = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.ActiveCfg = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.Build.0 = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.ActiveCfg = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.Build.0 = Release|Win32
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA}.Debug.ActiveCfg = Debug|Win32
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA}.Debug.Build.0 = Debug|Win32
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA}.Release.ActiveCfg = Release|Win32
+		{EE874E3B-5E71-444D-9EF1-44F32D53A1BA}.Release.Build.0 = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.ActiveCfg = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.Build.0 = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.ActiveCfg = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.Build.0 = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.ActiveCfg = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.Build.0 = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.ActiveCfg = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.Build.0 = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.ActiveCfg = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Debug.Build.0 = Debug|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.ActiveCfg = Release|Win32
+		{5B0ADEA5-5DFC-4C65-A218-76B2BEF80E7E}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
