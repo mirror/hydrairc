@@ -7,11 +7,12 @@
 // electronic documentation provided with the library.
 // See these sources for detailed information regarding the
 // Active Template Library product.
-
+ 
 #ifndef _ATL_NO_PRAGMA_WARNINGS
 #pragma warning (push)
 #pragma warning(disable : 4668)	// is not defined as a preprocessor macro, replacing with '0' for '#if/#elif
 #pragma warning(disable : 4820)	// padding added after member
+#pragma warning(disable : 4571) //catch(...) blocks compiled with /EHs do NOT catch or re-throw Structured Exceptions
 #endif //!_ATL_NO_PRAGMA_WARNINGS
 
 #ifndef __ATLWIN_H__
@@ -27,6 +28,7 @@
 	#error atlwin.h requires atlbase.h to be included first
 #endif
 
+#include <atlstdthunk.h>
 #include <commctrl.h>
 #include <atlsimpstr.h>
 
@@ -67,7 +69,11 @@ inline LONG_PTR GetWindowLongPtrW( HWND hWnd, int nIndex )
 }
 #endif
 
-//#ifndef _ATL_DLL_IMPL
+#ifndef _ATL_NO_DEFAULT_LIBS
+#pragma comment(lib, "gdi32.lib")
+#endif  // !_ATL_NO_DEFAULT_LIBS
+
+#pragma pack(push,_ATL_PACKING)
 namespace ATL
 {
 //#endif
@@ -108,25 +114,25 @@ public:
 struct _ATL_WNDCLASSINFOA;
 struct _ATL_WNDCLASSINFOW;
 
-ATLAPI_(ATOM) AtlWinModuleRegisterWndClassInfoA(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOA* p, WNDPROC* pProc);
+ATLAPIINL_(ATOM) AtlWinModuleRegisterWndClassInfoA(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOA* p, WNDPROC* pProc);
 inline ATOM AtlModuleRegisterWndClassInfoA(_ATL_MODULE* /*pM*/, _ATL_WNDCLASSINFOA* p, WNDPROC* pProc)
 {
 	return AtlWinModuleRegisterWndClassInfoA(&_AtlWinModule, &_AtlBaseModule, p, pProc);
 }
 
-ATLAPI_(ATOM) AtlWinModuleRegisterWndClassInfoW(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOW* p, WNDPROC* pProc);
+ATLAPIINL_(ATOM) AtlWinModuleRegisterWndClassInfoW(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOW* p, WNDPROC* pProc);
 inline ATOM AtlModuleRegisterWndClassInfoW(_ATL_MODULE* /*pM*/, _ATL_WNDCLASSINFOW* p, WNDPROC* pProc)
 {
 	return AtlWinModuleRegisterWndClassInfoW(&_AtlWinModule, &_AtlBaseModule, p, pProc);
 }
 
-ATLAPI_(ATOM) AtlWinModuleRegisterClassExA(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXA *lpwc);
+ATLAPIINL_(ATOM) AtlWinModuleRegisterClassExA(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXA *lpwc);
 inline ATOM AtlModuleRegisterClassExA(_ATL_MODULE* /*pM*/, const WNDCLASSEXA *lpwc)
 {
 	return AtlWinModuleRegisterClassExA(&_AtlWinModule, lpwc);
 }
 
-ATLAPI_(ATOM) AtlWinModuleRegisterClassExW(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXW *lpwc);
+ATLAPIINL_(ATOM) AtlWinModuleRegisterClassExW(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXW *lpwc);
 inline ATOM AtlModuleRegisterClassExW(_ATL_MODULE* /*pM*/, const WNDCLASSEXW *lpwc)
 {
 	return AtlWinModuleRegisterClassExW(&_AtlWinModule, lpwc);
@@ -162,10 +168,11 @@ ATLAPI_(void) AtlPixelToHiMetric(const SIZEL * lpSizeInPix, LPSIZEL lpSizeInHiMe
 #endif
 
 
-//#ifndef _ATL_DLL_IMPL
 }; //namespace ATL
 //#endif
 
+
+ 
 namespace ATL
 {
 
@@ -249,7 +256,9 @@ struct _ATL_WNDCLASSINFOW
 };
 
 };  // namespace ATL
+ 
 
+ 
 namespace ATL
 {
 
@@ -560,8 +569,14 @@ public:
 		// Copy entire header into new template.
 		BYTE* pNew = (BYTE*)GlobalAlloc(GMEM_FIXED, cbNewTemplate);
 		DLGTEMPLATE* pNewTemplate = (DLGTEMPLATE*)pNew;
-		memcpy(pNew, pTemplate, cbHeader);
+		Checked::memcpy_s(pNew, cbNewTemplate, pTemplate, cbHeader);
 		pNew += cbHeader;
+		
+#if _SECURE_ATL
+		ULONG_PTR cbNewTemplateLast = cbNewTemplate;
+		cbNewTemplate -= cbHeader;
+		ATLENSURE(cbNewTemplate <= cbNewTemplateLast);
+#endif
 
 		// Initialize item count in new header to zero.
 		DlgTemplateItemCount(pNewTemplate) = 0;
@@ -586,8 +601,13 @@ public:
 				ATLASSERT(cbItem >= (bDialogEx ?
 					sizeof(DLGITEMTEMPLATEEX) :
 					sizeof(DLGITEMTEMPLATE)));
-				memcpy(pNew, pItem, cbItem);
+				Checked::memcpy_s(pNew, cbNewTemplate, pItem, cbItem);
 				pNew += cbItem;
+#if _SECURE_ATL
+				cbNewTemplateLast = cbNewTemplate;
+				cbNewTemplate -= cbItem;
+				ATLENSURE(cbNewTemplate <= cbNewTemplateLast);
+#endif
 
 				// Incrememt item count in new header.
 				++DlgTemplateItemCount(pNewTemplate);
@@ -689,7 +709,7 @@ public:
 
 	void Attach(HWND hWndNew) throw()
 	{
-		ATLASSERT(m_hWnd == NULL);
+		ATLASSUME(m_hWnd == NULL);
 		ATLASSERT((hWndNew == NULL) || ::IsWindow(hWndNew));
 		m_hWnd = hWndNew;
 	}
@@ -705,7 +725,7 @@ public:
 			DWORD dwStyle = 0, DWORD dwExStyle = 0,
 			_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL) throw()
 	{
-		ATLASSERT(m_hWnd == NULL);
+		ATLASSUME(m_hWnd == NULL);
 		if(rect.m_lpRect == NULL)
 			rect.m_lpRect = &rcDefault;
 		m_hWnd = ::CreateWindowEx(dwExStyle, lpstrWndClass, szWindowName,
@@ -816,7 +836,7 @@ public:
 		return ::SetWindowText(m_hWnd, lpszString);
 	}
 
-	int GetWindowText(LPTSTR lpszStringBuf, int nMaxCount) const throw()
+	int GetWindowText(__out_ecount_part_z(nMaxCount, return + 1) LPTSTR lpszStringBuf, __in int nMaxCount) const throw()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		return ::GetWindowText(m_hWnd, lpszStringBuf, nMaxCount);
@@ -1195,25 +1215,25 @@ public:
 		return ::CheckRadioButton(m_hWnd, nIDFirstButton, nIDLastButton, nIDCheckButton);
 	}
 
-	int DlgDirList(LPTSTR lpPathSpec, int nIDListBox, int nIDStaticPath, UINT nFileType) throw()
+	int DlgDirList(__inout_z LPTSTR lpPathSpec, __in int nIDListBox, __in int nIDStaticPath, __in UINT nFileType) throw()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		return ::DlgDirList(m_hWnd, lpPathSpec, nIDListBox, nIDStaticPath, nFileType);
 	}
 
-	int DlgDirListComboBox(LPTSTR lpPathSpec, int nIDComboBox, int nIDStaticPath, UINT nFileType) throw()
+	int DlgDirListComboBox(__inout_z LPTSTR lpPathSpec, __in int nIDComboBox, __in int nIDStaticPath, __in UINT nFileType) throw()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		return ::DlgDirListComboBox(m_hWnd, lpPathSpec, nIDComboBox, nIDStaticPath, nFileType);
 	}
 
-	BOOL DlgDirSelect(LPTSTR lpString, int nCount, int nIDListBox) throw()
+	BOOL DlgDirSelect(__out_ecount_z(nCount) LPTSTR lpString, __in int nCount, __in int nIDListBox) throw()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		return ::DlgDirSelectEx(m_hWnd, lpString, nCount, nIDListBox);
 	}
 
-	BOOL DlgDirSelectComboBox(LPTSTR lpString, int nCount, int nIDComboBox) throw()
+	BOOL DlgDirSelectComboBox(__out_ecount_z(nCount) LPTSTR lpString, __in int nCount, __in int nIDComboBox) throw()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		return ::DlgDirSelectComboBoxEx(m_hWnd, lpString, nCount, nIDComboBox);
@@ -1225,7 +1245,7 @@ public:
 		return ::GetDlgItemInt(m_hWnd, nID, lpTrans, bSigned);
 	}
 
-	UINT GetDlgItemText(int nID, LPTSTR lpStr, int nMaxCount) const throw()
+	UINT GetDlgItemText(__in int nID, __out_ecount_part_z(nMaxCount, return + 1) LPTSTR lpStr, __in int nMaxCount) const throw()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		return ::GetDlgItemText(m_hWnd, nID, lpStr, nMaxCount);
@@ -1690,7 +1710,7 @@ public:
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		TCHAR szBuf[8]; // "#32770" + NUL character
-		if (GetClassName(GetParent(), szBuf, sizeof(szBuf)/sizeof(TCHAR)) == 0)
+		if (GetClassName(GetParent(), szBuf, sizeof(szBuf)/sizeof(szBuf[0])) == 0)
 			return FALSE;
 		return lstrcmp(szBuf, _T("#32770")) == 0;
 	}
@@ -1868,31 +1888,37 @@ public:
 	}
 	BOOL GetWindowText(BSTR& bstrText) throw()
 	{
-		USES_CONVERSION;
+		USES_CONVERSION_EX;
 		ATLASSERT(::IsWindow(m_hWnd));
-		if (bstrText != NULL)
-		{
-			SysFreeString(bstrText);
-			bstrText = NULL;
-		}
+        ::SysFreeString(bstrText);
+		bstrText = NULL;
 
 		int nLen = ::GetWindowTextLength(m_hWnd);
-		if(nLen == 0)
-		{
-			bstrText = ::SysAllocString(OLESTR(""));
-			return (bstrText != NULL) ? TRUE : FALSE;
-		}
+ 
 
 		CTempBuffer<TCHAR> lpszText;
-		ATLTRY(lpszText.Allocate(nLen+1));
-		if (lpszText == NULL)
-			return FALSE;
+        if(nLen>0)
+        {
+		    ATLTRY(lpszText.Allocate(nLen+1));
+		    if (lpszText == NULL)
+            {
+			    return FALSE;
+            }
 
-		if(!::GetWindowText(m_hWnd, lpszText, nLen+1))
-			return FALSE;
+		    if(!::GetWindowText(m_hWnd, lpszText, nLen+1))
+            {
+			    return FALSE;
+            }
+        }
 
-		bstrText = ::SysAllocString(T2OLE(lpszText));
-		return (bstrText != NULL) ? TRUE : FALSE;
+		bstrText = ::SysAllocString(T2OLE_EX_DEF(lpszText));
+#pragma warning(push)
+#pragma warning(disable:4068)
+#pragma prefast(push)
+#pragma prefast(disable:325, "We are deliberately checking if this has already been allocated")
+		return nLen==0 ? TRUE : ((bstrText != NULL) ? TRUE : FALSE);
+#pragma prefast(pop)
+#pragma warning(pop)
 	}
 #endif // _OLEAUTO_H_
 	CWindow GetTopLevelParent() const throw()
@@ -2021,11 +2047,30 @@ public:
 			return HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER);
 
 		CComBSTR bstrURL(OLESTR("res://"));
-		bstrURL.Append(szModule);
-		bstrURL.Append(OLESTR("/"));
+		HRESULT hr=bstrURL.Append(szModule);
+		if(FAILED(hr))
+		{
+			return hr;
+		}
+		hr=bstrURL.Append(OLESTR("/"));
+		if(FAILED(hr))
+		{
+			return hr;
+		}
 		TCHAR szResID[11];
+#if _SECURE_ATL && !defined(_ATL_MIN_CRT)
+		if (_stprintf_s(szResID, _countof(szResID), _T("%0d"), dwResID) == -1)
+		{
+			return HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER);
+		}
+#else
 		wsprintf(szResID, _T("%0d"), dwResID);
-		bstrURL.Append(szResID);
+#endif
+		hr=bstrURL.Append(szResID);
+		if(FAILED(hr))
+		{
+			return hr;
+		}
 
 		ATLASSERT(::IsWindow(m_hWnd));
 		return CreateControlEx(bstrURL, pStream, ppUnkContainer, ppUnkControl, iidSink, punkSink);
@@ -2208,7 +2253,14 @@ public:
 		bstrURL.Append(szModule);
 		bstrURL.Append(OLESTR("/"));
 		TCHAR szResID[11];
+#if _SECURE_ATL && !defined(_ATL_MIN_CRT)
+		if (_stprintf_s(szResID, _countof(szResID), _T("%0d"), dwResID) == -1)
+		{
+			return HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER);
+		}
+#else
 		wsprintf(szResID, _T("%0d"), dwResID);
+#endif
 		bstrURL.Append(szResID);
 
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -2230,9 +2282,9 @@ public:
 	_AtlCreateWndData cd;
 	CStdCallThunk thunk;
 
-	void Init(WNDPROC proc, void* pThis)
+	BOOL Init(WNDPROC proc, void* pThis)
 	{
-		thunk.Init((DWORD_PTR)proc, pThis);
+		return thunk.Init((DWORD_PTR)proc, pThis);
 	}
 	WNDPROC GetWNDPROC()
 	{
@@ -2854,11 +2906,12 @@ LRESULT CWindowImplRoot< TBase >::ReflectNotifications(UINT uMsg, WPARAM wParam,
 		break;
 	case WM_COMPAREITEM:
 		if(wParam)	// not from a menu
-			hWndChild = GetDlgItem(((LPCOMPAREITEMSTRUCT)lParam)->CtlID);
+			hWndChild =  ((LPCOMPAREITEMSTRUCT)lParam)->hwndItem;
 		break;
 	case WM_DELETEITEM:
-		if(wParam)	// not from a menu
-			hWndChild = GetDlgItem(((LPDELETEITEMSTRUCT)lParam)->CtlID);
+		if(wParam)	// not from a menu  
+			hWndChild =  ((LPDELETEITEMSTRUCT)lParam)->hwndItem;
+		 
 		break;
 	case WM_VKEYTOITEM:
 	case WM_CHARTOITEM:
@@ -2926,8 +2979,7 @@ class ATL_NO_VTABLE CWindowImplBaseT : public CWindowImplRoot< TBase >
 public:
 	WNDPROC m_pfnSuperWindowProc;
 
-	//CWindowImplBaseT() : m_pfnSuperWindowProc(::DefWindowProc)
-	CWindowImplBaseT() : m_pfnSuperWindowProc(::DefWindowProc), m_hwndSave(NULL) // Hydra - fix crash on close window
+	CWindowImplBaseT() : m_pfnSuperWindowProc(::DefWindowProc)
 	{}
 
 	static DWORD GetWndStyle(DWORD dwStyle)
@@ -2977,11 +3029,6 @@ public:
 	{
 		// override to do something, if needed
 	}
-/* Hydra - fix crash on close window */
-// Implementation helpers
-protected:
-	HWND m_hwndSave;
-/* Hydra - end */
 };
 
 typedef CWindowImplBaseT<CWindow>	CWindowImplBase;
@@ -2991,7 +3038,15 @@ LRESULT CALLBACK CWindowImplBaseT< TBase, TWinTraits >::StartWindowProc(HWND hWn
 {
 	CWindowImplBaseT< TBase, TWinTraits >* pThis = (CWindowImplBaseT< TBase, TWinTraits >*)_AtlWinModule.ExtractCreateWndData();
 	ATLASSERT(pThis != NULL);
+	if(!pThis)
+	{
+		return 0;
+	}
 	pThis->m_hWnd = hWnd;
+
+	// Initialize the thunk.  This is allocated in CWindowImplBaseT::Create,
+	// so failure is unexpected here.
+
 	pThis->m_thunk.Init(pThis->GetWindowProc(), pThis);
 	WNDPROC pProc = pThis->m_thunk.GetWNDPROC();
 	WNDPROC pOldProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)pProc);
@@ -3018,7 +3073,7 @@ LRESULT CALLBACK CWindowImplBaseT< TBase, TWinTraits >::WindowProc(HWND hWnd, UI
 	BOOL bRet = pThis->ProcessWindowMessage(pThis->m_hWnd, uMsg, wParam, lParam, lRes, 0);
 	// restore saved value for the current message
 	ATLASSERT(pThis->m_pCurrentMsg == &msg);
-	pThis->m_pCurrentMsg = pOldMsg;
+
 	// do the default processing if message was not handled
 	if(!bRet)
 	{
@@ -3031,39 +3086,38 @@ LRESULT CALLBACK CWindowImplBaseT< TBase, TWinTraits >::WindowProc(HWND hWnd, UI
 			lRes = pThis->DefWindowProc(uMsg, wParam, lParam);
 			if(pThis->m_pfnSuperWindowProc != ::DefWindowProc && ::GetWindowLongPtr(pThis->m_hWnd, GWLP_WNDPROC) == pfnWndProc)
 				::SetWindowLongPtr(pThis->m_hWnd, GWLP_WNDPROC, (LONG_PTR)pThis->m_pfnSuperWindowProc);
-			// mark window as destroyed
+			// mark window as destryed
 			pThis->m_dwState |= WINSTATE_DESTROYED;
-/* Hydra - fix crash on close window */
-			pThis->m_hwndSave = pThis->m_hWnd;
-			pThis->m_hWnd     = NULL;
-/* Hydra - end */
 		}
 	}
-	if((pThis->m_dwState & WINSTATE_DESTROYED) && pThis->m_pCurrentMsg == NULL)
+	if((pThis->m_dwState & WINSTATE_DESTROYED) && pOldMsg== NULL)
 	{
-    
-/* Hydra - fix crash on close window */
-    /*
 		// clear out window handle
-		HWND hWnd = pThis->m_hWnd;
+		HWND hWndThis = pThis->m_hWnd;
 		pThis->m_hWnd = NULL;
-    */
-		// clear out the saved handle
-		HWND hWnd = pThis->m_hwndSave;
-		pThis->m_hwndSave = NULL;
-/* Hydra - end */
 		pThis->m_dwState &= ~WINSTATE_DESTROYED;
 		// clean up after window is destroyed
-		pThis->OnFinalMessage(hWnd);
+		pThis->m_pCurrentMsg = pOldMsg;
+		pThis->OnFinalMessage(hWndThis);
+	}else {
+		pThis->m_pCurrentMsg = pOldMsg;
 	}
 	return lRes;
 }
 
 template <class TBase, class TWinTraits>
 HWND CWindowImplBaseT< TBase, TWinTraits >::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName,
-		DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID, ATOM atom, LPVOID lpCreateParam)
+												   DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID, ATOM atom, LPVOID lpCreateParam)
 {
-	ATLASSERT(m_hWnd == NULL);
+    BOOL result;
+	ATLASSUME(m_hWnd == NULL);
+
+    // Allocate the thunk structure here, where we can fail gracefully.
+	result = m_thunk.Init(NULL,NULL);
+	if (result == FALSE) {
+		SetLastError(ERROR_OUTOFMEMORY);
+		return NULL;
+	}
 
 	if(atom == 0)
 		return NULL;
@@ -3080,7 +3134,7 @@ HWND CWindowImplBaseT< TBase, TWinTraits >::Create(HWND hWndParent, _U_RECT rect
 		rect.m_lpRect->bottom - rect.m_lpRect->top, hWndParent, MenuOrID.m_hMenu,
 		_AtlBaseModule.GetModuleInstance(), lpCreateParam);
 
-	ATLASSERT(m_hWnd == hWnd);
+	ATLASSUME(m_hWnd == hWnd);
 
 	return hWnd;
 }
@@ -3088,9 +3142,17 @@ HWND CWindowImplBaseT< TBase, TWinTraits >::Create(HWND hWndParent, _U_RECT rect
 template <class TBase, class TWinTraits>
 BOOL CWindowImplBaseT< TBase, TWinTraits >::SubclassWindow(HWND hWnd)
 {
-	ATLASSERT(m_hWnd == NULL);
+	BOOL result;
+	ATLASSUME(m_hWnd == NULL);
 	ATLASSERT(::IsWindow(hWnd));
-	m_thunk.Init(GetWindowProc(), this);
+
+    // Allocate the thunk structure here, where we can fail gracefully.
+
+	result = m_thunk.Init(GetWindowProc(), this);
+	if (result == FALSE) 
+	{
+		return FALSE;
+	}
 	WNDPROC pProc = m_thunk.GetWNDPROC();
 	WNDPROC pfnWndProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)pProc);
 	if(pfnWndProc == NULL)
@@ -3105,7 +3167,7 @@ BOOL CWindowImplBaseT< TBase, TWinTraits >::SubclassWindow(HWND hWnd)
 template <class TBase, class TWinTraits>
 HWND CWindowImplBaseT< TBase, TWinTraits >::UnsubclassWindow(BOOL bForce /*= FALSE*/)
 {
-	ATLASSERT(m_hWnd != NULL);
+	ATLASSUME(m_hWnd != NULL);
 
 	WNDPROC pOurProc = m_thunk.GetWNDPROC();
 	WNDPROC pActiveProc = (WNDPROC)::GetWindowLongPtr(m_hWnd, GWLP_WNDPROC);
@@ -3249,7 +3311,6 @@ public:
 				UNALIGNED WORD* pDlgInit = (UNALIGNED WORD*)::LockResource(hResData);
 				if (pDlgInit)
 				{
-					USES_CONVERSION;
 					while (bSuccess && NULL != *pDlgInit)
 					{
 						WORD wID = *pDlgInit++;
@@ -3259,8 +3320,11 @@ public:
 						// CB_ADDSTRING is stored as 0x403
 						if (0x403 == wMsg)
 						{
-							if (-1 == SendDlgItemMessage(wID, CB_ADDSTRING, 0, (LPARAM)(A2T((LPSTR)pDlgInit))))
+							CA2T szText(reinterpret_cast<LPCSTR>(pDlgInit));
+							if (-1 == SendDlgItemMessage(wID, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(szText))))
+							{
 								bSuccess = FALSE;
+							}
 						}
 						// CBEM_INSERTITEM is stored as 0x1234
 						else if (0x1234 == wMsg)
@@ -3268,9 +3332,11 @@ public:
 							COMBOBOXEXITEM item;
 							item.mask = CBEIF_TEXT;
 							item.iItem = -1;
-							item.pszText = A2T(LPSTR(pDlgInit));
+							item.pszText = CA2T(reinterpret_cast<LPSTR>(pDlgInit));
 							if (-1 == SendDlgItemMessage(wID, CBEM_INSERTITEM, 0, (LPARAM)&item))
+							{
 								bSuccess = FALSE;
+							}
 						}
 						pDlgInit = (LPWORD)((LPBYTE)pDlgInit + dwSize);
 					}
@@ -3286,7 +3352,14 @@ INT_PTR CALLBACK CDialogImplBaseT< TBase >::StartDialogProc(HWND hWnd, UINT uMsg
 {
 	CDialogImplBaseT< TBase >* pThis = (CDialogImplBaseT< TBase >*)_AtlWinModule.ExtractCreateWndData();
 	ATLASSERT(pThis != NULL);
+	if(!pThis)
+	{
+		return 0;
+	}
 	pThis->m_hWnd = hWnd;
+	// Initialize the thunk.  This was allocated in CDialogImpl::DoModal or
+	// CDialogImpl::Create, so failure is unexpected here.
+
 	pThis->m_thunk.Init((WNDPROC)pThis->GetDialogProc(), pThis);
 	DLGPROC pProc = (DLGPROC)pThis->m_thunk.GetWNDPROC();
 	DLGPROC pOldProc = (DLGPROC)::SetWindowLongPtr(hWnd, DWLP_DLGPROC, (LONG_PTR)pProc);
@@ -3349,11 +3422,11 @@ INT_PTR CALLBACK CDialogImplBaseT< TBase >::DialogProc(HWND hWnd, UINT uMsg, WPA
 	if((pThis->m_dwState & WINSTATE_DESTROYED) && pThis->m_pCurrentMsg == NULL)
 	{
 		// clear out window handle
-		HWND hWnd = pThis->m_hWnd;
+		HWND hWndThis = pThis->m_hWnd;
 		pThis->m_hWnd = NULL;
 		pThis->m_dwState &= ~WINSTATE_DESTROYED;
 		// clean up after dialog is destroyed
-		pThis->OnFinalMessage(hWnd);
+		pThis->OnFinalMessage(hWndThis);
 	}
 	return bRet;
 }
@@ -3371,7 +3444,20 @@ public:
 	// modal dialogs
 	INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL)
 	{
-		ATLASSERT(m_hWnd == NULL);
+		BOOL result;
+
+		ATLASSUME(m_hWnd == NULL);
+
+		// Allocate the thunk structure here, where we can fail
+		// gracefully.
+
+		result = m_thunk.Init(NULL,NULL);
+		if (result == FALSE) 
+		{
+			SetLastError(ERROR_OUTOFMEMORY);
+			return -1;
+		}
+
 		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = true;
@@ -3382,20 +3468,35 @@ public:
 	BOOL EndDialog(int nRetCode)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		ATLASSERT(m_bModal);	// must be a modal dialog
+#ifdef _DEBUG
+		ATLASSUME(m_bModal);	// must be a modal dialog
+#endif //_DEBUG
 		return ::EndDialog(m_hWnd, nRetCode);
 	}
 	// modeless dialogs
 	HWND Create(HWND hWndParent, LPARAM dwInitParam = NULL)
 	{
-		ATLASSERT(m_hWnd == NULL);
+		BOOL result;
+
+		ATLASSUME(m_hWnd == NULL);
+
+		// Allocate the thunk structure here, where we can fail
+		// gracefully.
+
+		result = m_thunk.Init(NULL,NULL);
+		if (result == FALSE) 
+		{
+			SetLastError(ERROR_OUTOFMEMORY);
+			return NULL;
+		}
+
 		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = false;
 #endif //_DEBUG
 		HWND hWnd = ::CreateDialogParam(_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(static_cast<T*>(this)->IDD),
 					hWndParent, T::StartDialogProc, dwInitParam);
-		ATLASSERT(m_hWnd == hWnd);
+		ATLASSUME(m_hWnd == hWnd);
 		return hWnd;
 	}
 	// for CComControl
@@ -3406,7 +3507,9 @@ public:
 	BOOL DestroyWindow()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
+#ifdef _DEBUG
 		ATLASSERT(!m_bModal);	// must not be a modal dialog
+#endif //_DEBUG
 		return ::DestroyWindow(m_hWnd);
 	}
 };
@@ -3437,7 +3540,7 @@ public:
 	// modal dialogs
 	INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL)
 	{
-		ATLASSERT(m_hWnd == NULL);
+		ATLASSUME(m_hWnd == NULL);
 		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = true;
@@ -3449,21 +3552,21 @@ public:
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 #ifdef _DEBUG
-		ATLASSERT(m_bModal);	// must be a modal dialog
+		ATLASSUME(m_bModal);	// must be a modal dialog
 #endif //_DEBUG
 		return ::EndDialog(m_hWnd, nRetCode);
 	}
 	// modeless dialogs
 	HWND Create(HWND hWndParent, LPARAM dwInitParam = NULL)
 	{
-		ATLASSERT(m_hWnd == NULL);
+		ATLASSUME(m_hWnd == NULL);
 		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = false;
 #endif //_DEBUG
 		HWND hWnd = AtlAxCreateDialog(_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(static_cast<T*>(this)->IDD),
 					hWndParent, T::StartDialogProc, dwInitParam);
-		ATLASSERT(m_hWnd == hWnd);
+		ATLASSUME(m_hWnd == hWnd);
 		return hWnd;
 	}
 	// for CComControl
@@ -3552,7 +3655,7 @@ public:
 								{
 									BYTE* pBytes = (BYTE*) GlobalLock(h);
 									BYTE* pSource = pData; 
-									memcpy(pBytes, pSource, dwLen);
+									Checked::memcpy_s(pBytes, dwLen, pSource, dwLen);
 									GlobalUnlock(h);
 									CreateStreamOnHGlobal(h, TRUE, &spStream);
 								}
@@ -3717,9 +3820,9 @@ class CSimpleDialog : public CDialogImplBase
 public:
 	INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
 	{
-		ATLASSERT(m_hWnd == NULL);
+		ATLASSUME(m_hWnd == NULL);
 		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBase*)this);
-		int nRet = ::DialogBox(_AtlBaseModule.GetResourceInstance(),
+		INT_PTR nRet = ::DialogBox(_AtlBaseModule.GetResourceInstance(),
 			MAKEINTRESOURCE(t_wDlgTemplateID), hWndParent, StartDialogProc);
 		m_hWnd = NULL;
 		return nRet;
@@ -3813,7 +3916,15 @@ public:
 	{
 		CContainedWindowT< TBase >* pThis = (CContainedWindowT< TBase >*)_AtlWinModule.ExtractCreateWndData();
 		ATLASSERT(pThis != NULL);
+		if(!pThis)
+		{
+			return 0;
+		}
 		pThis->m_hWnd = hWnd;
+
+		// Initialize the thunk.  This was allocated in CContainedWindowT::Create,
+		// so failure is unexpected here.
+
 		pThis->m_thunk.Init(WindowProc, pThis);
 		WNDPROC pProc = pThis->m_thunk.GetWNDPROC();
 		WNDPROC pOldProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)pProc);
@@ -3830,8 +3941,17 @@ public:
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		CContainedWindowT< TBase >* pThis = (CContainedWindowT< TBase >*)hWnd;
+		ATLASSERT(pThis);
+		if(!pThis)
+		{
+			return 0;
+		}
 		ATLASSERT(pThis->m_hWnd != NULL);
 		ATLASSERT(pThis->m_pObject != NULL);
+		if(!pThis->m_hWnd || !pThis->m_pObject)
+		{
+			return 0;
+		}
 		// set a ptr to this message and save the old value
 		_ATL_MSG msg(pThis->m_hWnd, uMsg, wParam, lParam);
 		const _ATL_MSG* pOldMsg = pThis->m_pCurrentMsg;
@@ -3863,8 +3983,10 @@ public:
 
 	ATOM RegisterWndSuperclass()
 	{
+		USES_ATL_SAFE_ALLOCA;
 		ATOM atom = 0;
-		LPTSTR szBuff = (LPTSTR)_alloca((lstrlen(m_lpszClassName) + 14) * sizeof(TCHAR));
+		size_t cchBuff = _tcslen(m_lpszClassName) + 14;
+		LPTSTR szBuff = (LPTSTR)_ATL_SAFE_ALLOCA( (cchBuff * sizeof(TCHAR)), _ATL_SAFE_ALLOCA_DEF_THRESHOLD);
 
 		WNDCLASSEX wc;
 		wc.cbSize = sizeof(WNDCLASSEX);
@@ -3878,8 +4000,8 @@ public:
 		}
 
 		m_pfnSuperWindowProc = wc.lpfnWndProc;
-		lstrcpy(szBuff, _T("ATL:"));
-		lstrcat(szBuff, m_lpszClassName);
+		Checked::tcscpy_s(szBuff, cchBuff, _T("ATL:"));
+		Checked::tcscat_s(szBuff, cchBuff, m_lpszClassName);
 
 		WNDCLASSEX wc1;
 		wc1.cbSize = sizeof(WNDCLASSEX);
@@ -3901,11 +4023,21 @@ public:
 		DWORD dwStyle = 0, DWORD dwExStyle = 0,
 		_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL)
 	{
-		ATLASSERT(m_hWnd == NULL);
+		BOOL result;
+		ATLASSUME(m_hWnd == NULL);
 
 		ATOM atom = RegisterWndSuperclass();
 		if(atom == 0)
 			return NULL;
+
+		// Allocate the thunk structure here, where we can fail gracefully.
+
+		result = m_thunk.Init(NULL,NULL);
+		if (result == FALSE) 
+		{
+			SetLastError(ERROR_OUTOFMEMORY);
+			return NULL;
+		}
 
 		_AtlWinModule.AddCreateWndData(&m_thunk.cd, this);
 
@@ -3924,7 +4056,7 @@ public:
 								rect.m_lpRect->bottom - rect.m_lpRect->top,
 								hWndParent, MenuOrID.m_hMenu,
 								_AtlBaseModule.GetModuleInstance(), lpCreateParam);
-		ATLASSERT(m_hWnd == hWnd);
+		ATLASSUME(m_hWnd == hWnd);
 		return hWnd;
 	}
 
@@ -3951,10 +4083,16 @@ public:
 
 	BOOL SubclassWindow(HWND hWnd)
 	{
-		ATLASSERT(m_hWnd == NULL);
+		BOOL result;
+		ATLASSUME(m_hWnd == NULL);
 		ATLASSERT(::IsWindow(hWnd));
 
-		m_thunk.Init(WindowProc, this);
+		result = m_thunk.Init(WindowProc, this);
+		if (result == FALSE) 
+		{
+			return result;
+		}
+
 		WNDPROC pProc = m_thunk.GetWNDPROC();
 		WNDPROC pfnWndProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)pProc);
 		if(pfnWndProc == NULL)
@@ -3968,7 +4106,7 @@ public:
 	// WindowProc will automatically subclass when  window goes away
 	HWND UnsubclassWindow(BOOL bForce = FALSE)
 	{
-		ATLASSERT(m_hWnd != NULL);
+		ATLASSUME(m_hWnd != NULL);
 
 		WNDPROC pOurProc = m_thunk.GetWNDPROC();
 		WNDPROC pActiveProc = (WNDPROC)::GetWindowLongPtr(m_hWnd, GWLP_WNDPROC);
@@ -4020,11 +4158,12 @@ public:
 			break;
 		case WM_COMPAREITEM:
 			if(wParam)	// not from a menu
-				hWndChild = GetDlgItem(((LPCOMPAREITEMSTRUCT)lParam)->CtlID);
+				hWndChild = ((LPCOMPAREITEMSTRUCT)lParam)->hwndItem;
 			break;
 		case WM_DELETEITEM:
-			if(wParam)	// not from a menu
-				hWndChild = GetDlgItem(((LPDELETEITEMSTRUCT)lParam)->CtlID);
+			if(wParam)	// not from a menu   
+				hWndChild = ((LPDELETEITEMSTRUCT)lParam)->hwndItem;
+			
 			break;
 		case WM_VKEYTOITEM:
 		case WM_CHARTOITEM:
@@ -4112,7 +4251,7 @@ public:
 				lf.lfHeight = -MulDiv(wFontSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
 				lf.lfWeight = FW_NORMAL;
 				lf.lfCharSet = DEFAULT_CHARSET;
-				lstrcpyn(lf.lfFaceName, pszFontFace, sizeof(lf.lfFaceName) / sizeof(lf.lfFaceName[0]));
+				Checked::tcsncpy_s(lf.lfFaceName, _countof(lf.lfFaceName), pszFontFace, _TRUNCATE);
 
 				HFONT hNewFont = CreateFontIndirect(&lf);
 				if (hNewFont != NULL)
@@ -4230,18 +4369,20 @@ public:
 		return (BYTE*)pw;
 	}
 
-	static BOOL GetFont(const DLGTEMPLATE* pTemplate, TCHAR* pszFace, WORD* pFontSize)
+	static BOOL GetFont(__in const DLGTEMPLATE* pTemplate, __out_ecount_z(LF_FACESIZE) TCHAR* pszFace, __out WORD* pFontSize)
 	{
-		USES_CONVERSION;
+		ATLENSURE(pTemplate!=NULL);
 		if (!HasFont(pTemplate))
 			return FALSE;
+		ATLENSURE(pszFace!=NULL);
+		ATLENSURE(pFontSize!=NULL);
 
 		BYTE* pb = GetFontSizeField(pTemplate);
 		*pFontSize = *(WORD*)pb;
 		// Skip over font attributes to get to the font name
 		pb += sizeof(WORD) * (IsDialogEx(pTemplate) ? 3 : 1);
-
-		_tcsncpy(pszFace, W2T((WCHAR*)pb), LF_FACESIZE);
+		CW2T pszFaceTemp(reinterpret_cast<WCHAR*>(pb));
+		Checked::tcsncpy_s(pszFace, LF_FACESIZE, pszFaceTemp, _TRUNCATE);
 		if (_tcslen(pszFace) >= LF_FACESIZE) 
 		{	// NUL not appended
 			pszFace[LF_FACESIZE-1] = _T('\0');
@@ -4272,7 +4413,7 @@ inline void AtlGetDialogSize(const DLGTEMPLATE* pTemplate, SIZE* pSize, bool bPr
 }
 
 }; //namespace ATL
-
+ 
 #ifndef _ATL_NO_HOSTING
 
 #include <atlhost.h>
@@ -4281,9 +4422,8 @@ inline void AtlGetDialogSize(const DLGTEMPLATE* pTemplate, SIZE* pSize, bool bPr
 
 #endif // __ATLWIN_H__
 
-//All exports go here
-#ifndef _ATL_DLL
 
+ 
 namespace ATL
 {
 
@@ -4300,12 +4440,28 @@ public:
 		return ::GetClassInfoExA(hinst, lpszClass, lpwcx);
 	}
 
-	static void FormatWindowClassName(PXSTR szBuffer, void* unique)
+	_ATL_INSECURE_DEPRECATE("You must pass an output buffer size to AtlModuleRegisterWndClassInfoParamA::FormatWindowClassName")
+	static void FormatWindowClassName(__out_z PXSTR szBuffer, __in void* unique)
 	{
+#pragma warning(push)
+#pragma warning(disable:4996)
 #if defined(_WIN64) // || or Windows 2000
 		::wsprintfA(szBuffer, "ATL:%p", unique);
 #else
 		::wsprintfA(szBuffer, "ATL:%8.8X", reinterpret_cast<DWORD_PTR>(unique));
+#endif
+#pragma warning(pop)
+	}
+
+	static void FormatWindowClassName(__out_ecount_z(dwBuffSize) PXSTR szBuffer, __in DWORD dwBuffSize, __in void* unique)
+	{
+#if !defined(_ATL_MIN_CRT)
+		sprintf_s(szBuffer, dwBuffSize, "ATL:%p", unique);
+#else
+		// in MIN_CRT we cannot use sprintf_s, so we simply call _itoa to generate the string
+		size_t cchPrefix = strlen("ATL:");
+		Checked::strcpy_s(szBuffer, dwBuffSize, "ATL:");
+		Checked::ui64toa_s((unsigned __int64)unique, szBuffer + cchPrefix, dwBuffSize - cchPrefix, 16);
 #endif
 	}
 
@@ -4333,12 +4489,28 @@ public:
 		return ::GetClassInfoExW(hinst, lpszClass, lpwcx);
 	}
 
-	static void FormatWindowClassName(PXSTR szBuffer, void* unique)
+	_ATL_INSECURE_DEPRECATE("You must pass an output buffer size to AtlModuleRegisterWndClassInfoParamW::FormatWindowClassName")
+	static void FormatWindowClassName(__out_z PXSTR szBuffer, __in void* unique)
 	{
+#pragma warning(push)
+#pragma warning(disable:4996)
 #if defined(_WIN64) // || or Windows 2000
 		::wsprintfW(szBuffer, L"ATL:%p", unique);
 #else
 		::wsprintfW(szBuffer, L"ATL:%8.8X", reinterpret_cast<DWORD_PTR>(unique));
+#endif
+#pragma warning(pop)
+	}
+
+	static void FormatWindowClassName(__out_ecount_z(dwBuffSize) PXSTR szBuffer, __in DWORD dwBuffSize, __in void* unique)
+	{
+#if !defined(_ATL_MIN_CRT)
+		swprintf_s(szBuffer, dwBuffSize, L"ATL:%p", unique);
+#else
+		// in MIN_CRT we cannot use sprintf_s, so we simply call _itoa to generate the string
+		size_t cchPrefix = wcslen(L"ATL:");
+		Checked::wcscpy_s(szBuffer, dwBuffSize, L"ATL:");
+		Checked::ui64tow_s((unsigned __int64)unique, szBuffer + cchPrefix, dwBuffSize - cchPrefix, 16);
 #endif
 	}
 
@@ -4353,7 +4525,7 @@ public:
 	}
 };
 
-ATLINLINE ATLAPI_(ATOM) AtlWinModuleRegisterClassExA(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXA *lpwc)
+ATLINLINE ATLAPIINL_(ATOM) AtlWinModuleRegisterClassExA(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXA *lpwc)
 {
 	if (pWinModule == NULL || lpwc == NULL)
 		return 0;
@@ -4364,7 +4536,7 @@ ATLINLINE ATLAPI_(ATOM) AtlWinModuleRegisterClassExA(_ATL_WIN_MODULE* pWinModule
 	return atom;
 }
 
-ATLINLINE ATLAPI_(ATOM) AtlWinModuleRegisterClassExW(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXW *lpwc)
+ATLINLINE ATLAPIINL_(ATOM) AtlWinModuleRegisterClassExW(_ATL_WIN_MODULE* pWinModule, const WNDCLASSEXW *lpwc)
 {
 	if (pWinModule == NULL || lpwc == NULL)
 		return 0;
@@ -4430,7 +4602,11 @@ ATLINLINE ATOM AtlModuleRegisterWndClassInfoT(_ATL_BASE_MODULE* pBaseModule, _AT
 			p->m_wc.style &= ~CS_GLOBALCLASS;	// we don't register global classes
 			if (p->m_wc.lpszClassName == NULL)
 			{
+#if _SECURE_ATL
+				T::FormatWindowClassName(p->m_szAutoName, _countof(p->m_szAutoName), &p->m_wc);
+#else
 				T::FormatWindowClassName(p->m_szAutoName, &p->m_wc);
+#endif
 				p->m_wc.lpszClassName = p->m_szAutoName;
 			}
 			T::WNDCLASSEX wcTemp;
@@ -4452,21 +4628,24 @@ ATLINLINE ATOM AtlModuleRegisterWndClassInfoT(_ATL_BASE_MODULE* pBaseModule, _AT
 	return p->m_atom;
 }
 
-ATLINLINE ATLAPI_(ATOM) AtlWinModuleRegisterWndClassInfoA(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOA* p, WNDPROC* pProc)
+ATLINLINE ATLAPIINL_(ATOM) AtlWinModuleRegisterWndClassInfoA(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOA* p, WNDPROC* pProc)
 {
 	AtlModuleRegisterWndClassInfoParamA templateParameter;
 	return AtlModuleRegisterWndClassInfoT<AtlModuleRegisterWndClassInfoParamA>(pBaseModule, pWinModule, p, pProc, templateParameter);
 }
 
-ATLINLINE ATLAPI_(ATOM) AtlWinModuleRegisterWndClassInfoW(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOW* p, WNDPROC* pProc)
+ATLINLINE ATLAPIINL_(ATOM) AtlWinModuleRegisterWndClassInfoW(_ATL_WIN_MODULE* pWinModule, _ATL_BASE_MODULE* pBaseModule, _ATL_WNDCLASSINFOW* p, WNDPROC* pProc)
 {
 	AtlModuleRegisterWndClassInfoParamW templateParameter;
 	return AtlModuleRegisterWndClassInfoT<AtlModuleRegisterWndClassInfoParamW>(pBaseModule, pWinModule, p, pProc, templateParameter);
 }
 
+//All exports go here
+#ifndef _ATL_DLL
+
 ATLINLINE ATLAPI_(HDC) AtlCreateTargetDC(HDC hdc, DVTARGETDEVICE* ptd)
 {
-	USES_CONVERSION;
+	USES_CONVERSION_EX;
 
 	// cases  hdc, ptd, hdc is metafile, hic
 //  NULL,    NULL,  n/a,    Display
@@ -4492,8 +4671,7 @@ ATLINLINE ATLAPI_(HDC) AtlCreateTargetDC(HDC hdc, DVTARGETDEVICE* ptd)
 		lpszDeviceName = (LPOLESTR)((BYTE*)ptd + ptd->tdDeviceNameOffset);
 		lpszPortName   = (LPOLESTR)((BYTE*)ptd + ptd->tdPortNameOffset);
 
-		return ::CreateDC(OLE2CT(lpszDriverName), OLE2CT(lpszDeviceName),
-			OLE2CT(lpszPortName), DEVMODEOLE2T(lpDevMode));
+		return ::CreateDC(OLE2CT_EX_DEF(lpszDriverName), OLE2CT_EX_DEF(lpszDeviceName), OLE2CT_EX_DEF(lpszPortName), DEVMODEOLE2T_EX(lpDevMode));
 	}
 	else if (hdc == NULL || GetDeviceCaps(hdc, TECHNOLOGY) == DT_METAFILE)
 		return ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
@@ -4501,11 +4679,14 @@ ATLINLINE ATLAPI_(HDC) AtlCreateTargetDC(HDC hdc, DVTARGETDEVICE* ptd)
 		return hdc;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // Windowing : Conversion helpers
 
 ATLINLINE ATLAPI_(void) AtlHiMetricToPixel(const SIZEL * lpSizeInHiMetric, LPSIZEL lpSizeInPix)
 {
+	ATLENSURE_THROW(lpSizeInHiMetric!=NULL, E_POINTER);
+	ATLENSURE_THROW(lpSizeInPix!=NULL, E_POINTER);	
 	int nPixelsPerInchX;    // Pixels per logical inch along width
 	int nPixelsPerInchY;    // Pixels per logical inch along height
 
@@ -4521,6 +4702,8 @@ ATLINLINE ATLAPI_(void) AtlHiMetricToPixel(const SIZEL * lpSizeInHiMetric, LPSIZ
 
 ATLINLINE ATLAPI_(void) AtlPixelToHiMetric(const SIZEL * lpSizeInPix, LPSIZEL lpSizeInHiMetric)
 {
+	ATLENSURE_THROW(lpSizeInPix!=NULL, E_POINTER);
+	ATLENSURE_THROW(lpSizeInHiMetric!=NULL, E_POINTER);	
 	int nPixelsPerInchX;    // Pixels per logical inch along width
 	int nPixelsPerInchY;    // Pixels per logical inch along height
 
@@ -4533,10 +4716,12 @@ ATLINLINE ATLAPI_(void) AtlPixelToHiMetric(const SIZEL * lpSizeInPix, LPSIZEL lp
 	lpSizeInHiMetric->cx = MAP_PIX_TO_LOGHIM(lpSizeInPix->cx, nPixelsPerInchX);
 	lpSizeInHiMetric->cy = MAP_PIX_TO_LOGHIM(lpSizeInPix->cy, nPixelsPerInchY);
 }
+#endif // !_ATL_DLL
 
 } //namespace ATL
 
-#endif // !_ATL_DLL
+
+#pragma pack(pop)
 
 #ifndef _ATL_NO_PRAGMA_WARNINGS
 #pragma warning (pop)

@@ -1,0 +1,46 @@
+--- atlframe.h	2005-11-29 01:30:02.000000000 +0000
++++ D:\My Documents\projects\hydrairc\source\HydraIRC\include\altered_wtl_includes\7.5\atlframe.h	2006-05-21 15:57:40.109375000 +0100
+@@ -1544,6 +1544,12 @@
+ template <class T, class TBase = CMDIWindow, class TWinTraits = ATL::CFrameWinTraits>
+ class ATL_NO_VTABLE CMDIFrameWindowImpl : public CFrameWindowImplBase<TBase, TWinTraits >
+ {
++/* Hydra - fix crash on close window */
++// Implementation helpers
++protected:
++	HWND m_hwndSave;
++/* Hydra - end */
++  
+ public:
+ 	HWND Create(HWND hWndParent = NULL, ATL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+ 			DWORD dwStyle = 0, DWORD dwExStyle = 0,
+@@ -1632,8 +1638,12 @@
+ 				if(pThis->m_pfnSuperWindowProc != ::DefWindowProc && ::GetWindowLongPtr(pThis->m_hWnd, GWLP_WNDPROC) == pfnWndProc)
+ 					::SetWindowLongPtr(pThis->m_hWnd, GWLP_WNDPROC, (LONG_PTR)pThis->m_pfnSuperWindowProc);
+ #if (_ATL_VER >= 0x0700)
+-				// mark window as destryed
++				// mark window as destroyed // Hydra - fixed spelling
+ 				pThis->m_dwState |= WINSTATE_DESTROYED;
++/* Hydra - fix crash on close window */
++			  pThis->m_hwndSave = pThis->m_hWnd;
++			  pThis->m_hWnd     = NULL;
++/* Hydra - end */
+ #else // !(_ATL_VER >= 0x0700)
+ 				// clear out window handle
+ 				HWND hWnd = pThis->m_hWnd;
+@@ -1646,9 +1656,16 @@
+ #if (_ATL_VER >= 0x0700)
+ 		if(pThis->m_dwState & WINSTATE_DESTROYED && pThis->m_pCurrentMsg == NULL)
+ 		{
++/* Hydra - fix crash on close window */
++      /*
+ 			// clear out window handle
+ 			HWND hWnd = pThis->m_hWnd;
+ 			pThis->m_hWnd = NULL;
++      */
++		  // clear out the saved handle
++		  HWND hWnd = pThis->m_hwndSave;
++		  pThis->m_hwndSave = NULL;
++/* Hydra - end */
+ 			pThis->m_dwState &= ~WINSTATE_DESTROYED;
+ 			// clean up after window is destroyed
+ 			pThis->OnFinalMessage(hWnd);

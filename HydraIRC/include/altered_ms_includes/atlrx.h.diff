@@ -1,0 +1,22 @@
+Index: atlrx.h
+===================================================================
+--- atlrx.h	(revision 79)
++++ atlrx.h	(working copy)
+@@ -627,7 +627,7 @@
+ 
+ 			case RE_RANGE:
+ 				{
+-					if (*sz == '\0' || (unsigned char)(*sz) > 127) // Hydra - fixed!
++					if (*sz == '\0')
+ 					{
+ 						ip = (size_t) pContext->Pop();
+ 						break;
+@@ -650,7 +650,7 @@
+ 
+ 			case RE_NOTRANGE:
+ 				{
+-					if (*sz == '\0' || (unsigned char)(*sz) > 127) // Hydra - fixed!
++					if (*sz == '\0')
+ 					{
+ 						ip = (size_t) pContext->Pop();
+ 						break;

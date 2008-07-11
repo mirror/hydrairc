@@ -1,0 +1,55 @@
+Index: atlwin.h
+===================================================================
+--- atlwin.h	(revision 79)
++++ atlwin.h	(working copy)
+@@ -2926,8 +2926,7 @@
+ public:
+ 	WNDPROC m_pfnSuperWindowProc;
+ 
+-	//CWindowImplBaseT() : m_pfnSuperWindowProc(::DefWindowProc)
+-	CWindowImplBaseT() : m_pfnSuperWindowProc(::DefWindowProc), m_hwndSave(NULL) // Hydra - fix crash on close window
++	CWindowImplBaseT() : m_pfnSuperWindowProc(::DefWindowProc)
+ 	{}
+ 
+ 	static DWORD GetWndStyle(DWORD dwStyle)
+@@ -2977,11 +2976,6 @@
+ 	{
+ 		// override to do something, if needed
+ 	}
+-/* Hydra - fix crash on close window */
+-// Implementation helpers
+-protected:
+-	HWND m_hwndSave;
+-/* Hydra - end */
+ };
+ 
+ typedef CWindowImplBaseT<CWindow>	CWindowImplBase;
+@@ -3031,27 +3025,15 @@
+ 			lRes = pThis->DefWindowProc(uMsg, wParam, lParam);
+ 			if(pThis->m_pfnSuperWindowProc != ::DefWindowProc && ::GetWindowLongPtr(pThis->m_hWnd, GWLP_WNDPROC) == pfnWndProc)
+ 				::SetWindowLongPtr(pThis->m_hWnd, GWLP_WNDPROC, (LONG_PTR)pThis->m_pfnSuperWindowProc);
+-			// mark window as destroyed
++			// mark window as destryed
+ 			pThis->m_dwState |= WINSTATE_DESTROYED;
+-/* Hydra - fix crash on close window */
+-			pThis->m_hwndSave = pThis->m_hWnd;
+-			pThis->m_hWnd     = NULL;
+-/* Hydra - end */
+ 		}
+ 	}
+ 	if((pThis->m_dwState & WINSTATE_DESTROYED) && pThis->m_pCurrentMsg == NULL)
+ 	{
+-    
+-/* Hydra - fix crash on close window */
+-    /*
+ 		// clear out window handle
+ 		HWND hWnd = pThis->m_hWnd;
+ 		pThis->m_hWnd = NULL;
+-    */
+-		// clear out the saved handle
+-		HWND hWnd = pThis->m_hwndSave;
+-		pThis->m_hwndSave = NULL;
+-/* Hydra - end */
+ 		pThis->m_dwState &= ~WINSTATE_DESTROYED;
+ 		// clean up after window is destroyed
+ 		pThis->OnFinalMessage(hWnd);

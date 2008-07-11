@@ -1,0 +1,27 @@
+Index: atlctrlw.h
+===================================================================
+--- atlctrlw.h	(revision 80)
++++ atlctrlw.h	(working copy)
+@@ -825,6 +825,22 @@
+ 		T* pT = static_cast<T*>(this);
+ 		return pT->DoTrackPopupMenu(hMenu, uFlags, x, y, lpParams);
+ 	}
++	
++  // Hydra - begin
++	BOOL TrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND hWnd = m_hWnd, LPTPMPARAMS lpParams = NULL)
++	{
++		ATLASSERT(::IsWindow(hWnd));
++		ATLASSERT(::IsMenu(hMenu));
++		if(!::IsMenu(hMenu))
++			return FALSE;
++		m_bContextMenu = true;
++		if(m_bUseKeyboardCues)
++			m_bShowKeyboardCues = m_bKeyboardInput;
++		T* pT = static_cast<T*>(this);
++		return pT->DoTrackPopupMenuEx(hMenu, uFlags, x, y, hWnd, lpParams);
++	}
++  // Hydra - end
++	
+ 
+ 	BOOL SetMDIClient(HWND /*hWndMDIClient*/)
+ 	{

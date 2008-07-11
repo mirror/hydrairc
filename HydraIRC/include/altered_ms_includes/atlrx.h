@@ -71,13 +71,49 @@
 		z		([0-9]+)					integer
 */
 
+#pragma pack(push,_ATL_PACKING)
 namespace ATL {
+
+//Convertion utility classes used to convert char* to RECHAR.
+//Used by rx debugging printing.
+template <typename RECHARTYPE=char>
+class CAToREChar
+{
+public:
+	CAToREChar(const char* psz) throw()
+	: m_psz(psz)
+	{
+	}
+	operator const RECHARTYPE*() const throw() { return m_psz; }
+	const char* m_psz;
+};
+
+template<>
+class CAToREChar<wchar_t>
+{
+public:
+	CAToREChar(const char* psz) throw()
+	: m_a2w(psz)
+	{
+	}
+	operator const wchar_t*() const throw() { return (wchar_t*)m_a2w; }
+	
+private:
+	CA2W m_a2w;
+};
 
 class CAtlRECharTraitsA
 {
 public:
 	typedef char RECHARTYPE;
 
+	static size_t GetBitFieldForRangeArrayIndex(const RECHARTYPE *sz) throw()
+	{
+#ifndef ATL_NO_CHECK_BIT_FIELD
+		ATLASSERT(UseBitFieldForRange());
+#endif
+		return static_cast<size_t>(static_cast<unsigned char>(*sz));		
+	}
 	static RECHARTYPE *Next(const RECHARTYPE *sz) throw()
 	{
 		return (RECHARTYPE *) (sz+1);
@@ -93,9 +129,19 @@ public:
 		return _strnicmp(szLeft, szRight, nCount);
 	}
 
+	_ATL_INSECURE_DEPRECATE("CAtlRECharTraitsA::Strlwr must be passed a buffer size.")
 	static RECHARTYPE *Strlwr(RECHARTYPE *sz) throw()
 	{
+		#pragma warning (push)
+		#pragma warning(disable : 4996)
 		return _strlwr(sz);
+		#pragma warning (pop)
+	}
+
+	static RECHARTYPE *Strlwr(RECHARTYPE *sz, int nSize) throw()
+	{
+		Checked::strlwr_s(sz, nSize);
+		return sz;
 	}
 
 	static long Strtol(const RECHARTYPE *sz, RECHARTYPE **szEnd, int nBase) throw()
@@ -105,7 +151,7 @@ public:
 
 	static int Isdigit(RECHARTYPE ch) throw()
 	{
-		return isdigit(ch);
+		return isdigit(static_cast<unsigned char>(ch));
 	}
 
 	static const RECHARTYPE** GetAbbrevs()
@@ -142,7 +188,14 @@ class CAtlRECharTraitsW
 {
 public:
 	typedef WCHAR RECHARTYPE;
-
+	
+	static size_t GetBitFieldForRangeArrayIndex(const RECHARTYPE *sz) throw()
+	{		
+#ifndef ATL_NO_CHECK_BIT_FIELD
+		ATLASSERT(UseBitFieldForRange());
+#endif
+		return static_cast<size_t>(*sz);
+	}
 	static RECHARTYPE *Next(const RECHARTYPE *sz) throw()
 	{
 		return (RECHARTYPE *) (sz+1);
@@ -158,9 +211,19 @@ public:
 		return _wcsnicmp(szLeft, szRight, nCount);
 	}
 
+	_ATL_INSECURE_DEPRECATE("CAtlRECharTraitsW::Strlwr must be passed a buffer size.")
 	static RECHARTYPE *Strlwr(RECHARTYPE *sz) throw()
 	{
+		#pragma warning (push)
+		#pragma warning(disable : 4996)
 		return _wcslwr(sz);
+		#pragma warning (pop)
+	}
+
+	static RECHARTYPE *Strlwr(RECHARTYPE *sz, int nSize) throw()
+	{
+		Checked::wcslwr_s(sz, nSize);
+		return sz;
 	}
 
 	static long Strtol(const RECHARTYPE *sz, RECHARTYPE **szEnd, int nBase) throw()
@@ -208,6 +271,15 @@ class CAtlRECharTraitsMB
 public:
 	typedef unsigned char RECHARTYPE;
 
+	static size_t GetBitFieldForRangeArrayIndex(const RECHARTYPE *sz) throw()
+	{		
+#ifndef ATL_NO_CHECK_BIT_FIELD
+		ATLASSERT(UseBitFieldForRange());
+#endif
+
+		return static_cast<size_t>(*sz);		
+	}
+
 	static RECHARTYPE *Next(const RECHARTYPE *sz) throw()
 	{
 		return _mbsinc(sz);
@@ -223,9 +295,19 @@ public:
 		return _mbsnicmp(szLeft, szRight, nCount);
 	}
 
+	_ATL_INSECURE_DEPRECATE("CAtlRECharTraitsMB::Strlwr must be passed a buffer size.")
 	static RECHARTYPE *Strlwr(RECHARTYPE *sz) throw()
 	{
+		#pragma warning (push)
+		#pragma warning(disable : 4996)
 		return _mbslwr(sz);
+		#pragma warning (pop)
+	}
+
+	static RECHARTYPE *Strlwr(RECHARTYPE *sz, int nSize) throw()
+	{
+		Checked::mbslwr_s(sz, nSize);
+		return sz;
 	}
 
 	static long Strtol(const RECHARTYPE *sz, RECHARTYPE **szEnd, int nBase) throw()
@@ -282,17 +364,20 @@ public:
 
 	MatchGroup m_Match;
 
-	void GetMatch(int nIndex, const RECHAR **szStart, const RECHAR **szEnd)
+	void GetMatch(UINT nIndex, const RECHAR **szStart, const RECHAR **szEnd)
 	{
-		ATLASSERT(szStart != NULL);
-		ATLASSERT(szEnd != NULL);
+		ATLENSURE(szStart != NULL);
+		ATLENSURE(szEnd != NULL);
+		ATLENSURE(nIndex >=0 && nIndex < m_uNumGroups);
 		*szStart = m_Matches[nIndex].szStart;
 		*szEnd = m_Matches[nIndex].szEnd;
 	}
 
-	void GetMatch(int nIndex, MatchGroup *pGroup)
+	void GetMatch(UINT nIndex, MatchGroup *pGroup)
 	{
-		ATLASSERT(pGroup != NULL);
+		 
+		ATLENSURE(pGroup != NULL);
+		ATLENSURE(nIndex >=0&&(static_cast<UINT>(nIndex))< m_uNumGroups);
 		pGroup->szStart = m_Matches[nIndex].szStart;
 		pGroup->szEnd = m_Matches[nIndex].szEnd;
 	}
@@ -425,9 +510,9 @@ public:
 			if (!szInput)
 				return REPARSE_ERROR_OUTOFMEMORY;
 
-			memcpy((char *) szInput, szRE, nSize);
+			Checked::memcpy_s((char *) szInput, nSize, szRE, nSize);
 
-			CharTraits::Strlwr( const_cast<RECHAR *>(szInput));
+			CharTraits::Strlwr(const_cast<RECHAR *>(szInput), nSize/sizeof(RECHAR));
 		}
 		const RECHAR *sz = szInput;
 
@@ -483,8 +568,8 @@ public:
 			if (!szInput)
 				return FALSE;
 
-			memcpy((char *) szInput, szIn, nSize);
-			CharTraits::Strlwr((RECHAR *) szInput);
+			Checked::memcpy_s((char *) szInput, nSize, szIn, nSize);
+			CharTraits::Strlwr(const_cast<RECHAR *>(szInput), nSize/sizeof(RECHAR));
 		}
 
 		if (!pContext->Initialize(m_uRequiredMem, m_uNumGroups))
@@ -505,7 +590,7 @@ public:
 		while (1)
 		{
 #ifdef ATLRX_DEBUG
-			OnDebugEvent(ip, szIn, sz, pContext);
+			OnDebugEvent(ip, szInput, sz, pContext);
 #endif
 			if (ip == 0)
 				pContext->m_Match.szStart = sz;
@@ -517,7 +602,7 @@ public:
 				break;
 
 			case RE_SYMBOL:
-				if (GetInstruction(ip).symbol.nSymbol == (RECHAR)*sz)
+				if (GetInstruction(ip).symbol.nSymbol == static_cast<size_t>(*sz))
 				{
 					sz = CharTraits::Next(sz);
 					ip++;
@@ -627,14 +712,14 @@ public:
 
 			case RE_RANGE:
 				{
-					if (*sz == '\0' || (unsigned char)(*sz) > 127) // Hydra - fixed!
+					if (*sz == '\0')
 					{
 						ip = (size_t) pContext->Pop();
 						break;
 					}
 
-					unsigned char *pBits = (unsigned char *) (&m_Instructions[ip]+1);
-					size_t u = (size_t) *sz;
+					RECHAR *pBits = reinterpret_cast<RECHAR *>((&m_Instructions[ip]+1));
+					size_t u = CharTraits::GetBitFieldForRangeArrayIndex(sz);
 					if (pBits[u >> 3] & 1 << (u & 0x7))
 					{
 						ip += InstructionsPerRangeBitField();
@@ -650,14 +735,14 @@ public:
 
 			case RE_NOTRANGE:
 				{
-					if (*sz == '\0' || (unsigned char)(*sz) > 127) // Hydra - fixed!
+					if (*sz == '\0')
 					{
 						ip = (size_t) pContext->Pop();
 						break;
 					}
 
-					unsigned char *pBits = (unsigned char *) (&m_Instructions[ip]+1);
-					size_t u = (size_t) * ((unsigned char *) sz);
+					RECHAR *pBits = reinterpret_cast<RECHAR *>((&m_Instructions[ip]+1));
+					size_t u = static_cast<size_t>(* ((RECHAR *) sz));
 					if (pBits[u >> 3] & 1 << (u & 0x7))
 					{
 						ip = (size_t) pContext->Pop();
@@ -685,8 +770,8 @@ public:
 
 					while (ip < inEnd)
 					{						
-						if ((RECHAR)*sz >= GetInstruction(ip).memory.nIndex && 
-							(RECHAR)*sz <= GetInstruction(ip+1).memory.nIndex)
+						if (static_cast<size_t>(*sz) >= GetInstruction(ip).memory.nIndex && 
+							static_cast<size_t>(*sz) <= GetInstruction(ip+1).memory.nIndex)
 						{
 							// if we match, we jump to the end
 							sz = CharTraits::Next(sz);
@@ -719,8 +804,8 @@ public:
 
 					while (ip < inEnd)
 					{
-						if ((RECHAR)*sz >= GetInstruction(ip).memory.nIndex && 
-							(RECHAR)*sz <= GetInstruction(ip+1).memory.nIndex)
+						if (static_cast<size_t>(*sz) >= GetInstruction(ip).memory.nIndex && 
+							static_cast<size_t>(*sz) <= GetInstruction(ip+1).memory.nIndex)
 						{
 							ip = (size_t) pContext->Pop();
 							bMatch = FALSE;
@@ -915,7 +1000,7 @@ protected:
 
 	inline int InstructionsPerRangeBitField() throw()
 	{
-		return (256/8) / sizeof(INSTRUCTION) + ((256/8) % sizeof(INSTRUCTION) ? 1 : 0);
+		return (256/8) / sizeof(INSTRUCTION) + (((256/8) % sizeof(INSTRUCTION)) ? 1 : 0);
 	}
 
 	CAtlArray<INSTRUCTION> m_Instructions;
@@ -1652,9 +1737,13 @@ protected:
 		return p;
 	}
 
-	void FixupMatchContext(CAtlREMatchContext<CharTraits> *pContext, const RECHAR *szOrig, const RECHAR *szNew) throw()
+	//pointers to the matched string and matched groups, currently point into an internal allocated 
+	//buffer that hold a copy of the input string.
+	//This function fix these pointers to point into the original, user supplied buffer (first param to Match method).
+	//Example: If a ptr (szStart) currently point to <internal buffer>+3, it is fixed to <user supplied buffer>+3
+	void FixupMatchContext(CAtlREMatchContext<CharTraits> *pContext, const RECHAR *szOrig, const RECHAR *szNew) 
 	{
-		ATLASSERT(pContext);
+		ATLENSURE(pContext);
 		ATLASSERT(szOrig);
 		ATLASSERT(szNew);
 
@@ -1662,6 +1751,10 @@ protected:
 		pContext->m_Match.szEnd = szOrig + (pContext->m_Match.szEnd - szNew);
 		for (UINT i=0; i<pContext->m_uNumGroups; i++)
 		{
+			if (pContext->m_Matches[i].szStart==NULL || pContext->m_Matches[i].szEnd==NULL)
+			{
+				continue; //Do not fix unmatched groups.
+			}
 			pContext->m_Matches[i].szStart = szOrig + (pContext->m_Matches[i].szStart - szNew);
 			pContext->m_Matches[i].szEnd = szOrig + (pContext->m_Matches[i].szEnd - szNew);
 		}
@@ -1681,7 +1774,7 @@ public:
 			break;
 
 		case RE_SYMBOL:
-			printf("Symbol %c\n", GetInstruction(ip).symbol.nSymbol);
+			AtlprintfT<RECHAR>(CAToREChar<RECHAR>("Symbol %c\n"),GetInstruction(ip).symbol.nSymbol);			
 			ip++;
 			break;
 
@@ -1879,7 +1972,7 @@ public:
 			else
 			{
 				// assume a pointer into the input
-				printf("%s\n", pContext->m_stack[i]);
+				AtlprintfT<RECHAR>(CAToREChar<RECHAR>("%s\n"), pContext->m_stack[i]);
 			}
 		}
 	}
@@ -1888,7 +1981,7 @@ public:
 	{
 		for (UINT i=0; i<m_uRequiredMem; i++)
 		{
-			printf("%d: %s\n", i, pContext->m_Mem.m_p[i]);
+			AtlprintfT<RECHAR>(CAToREChar<RECHAR>("%d: %s\n"), i, pContext->m_Mem.m_p[i]);
 		}
 	}
 
@@ -1897,21 +1990,24 @@ public:
 		cls(GetStdHandle(STD_OUTPUT_HANDLE));
 		printf("----------Code---------\n");
 		Dump(ip);
-		printf("----------Input---------\n");
-		printf("%s\n", szIn);
+		printf("----------Input---------\n");		
+		AtlprintfT<RECHAR>(CAToREChar<RECHAR>("%s\n"), szIn);
 		for (int s=0; szIn+s < sz; s++)
+		{
 			printf(" ");
+		}		
 		printf("^\n");
 		printf("----------Memory---------\n");
 		DumpMemory(pContext);
-		printf("----------Stack--------\n");
+		printf("----------Stack---------\n");		
 		DumpStack(pContext);
-		getch();
+		getchar();
 	}
 #endif
 
 };
 
 } // namespace ATL
+#pragma pack(pop)
 
 #endif // __ATLRX_H__

@@ -1,0 +1,24 @@
+--- atlctrlw.h	2005-11-29 01:30:02.000000000 +0000
++++ D:\My Documents\projects\hydrairc\source\HydraIRC\include\altered_wtl_includes\7.5\atlctrlw.h	2006-05-21 15:57:39.125000000 +0100
+@@ -826,6 +826,21 @@
+ 		return pT->DoTrackPopupMenu(hMenu, uFlags, x, y, lpParams);
+ 	}
+ 
++  // Hydra - begin
++	BOOL TrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND hWnd = m_hWnd, LPTPMPARAMS lpParams = NULL)
++	{
++		ATLASSERT(::IsWindow(hWnd));
++		ATLASSERT(::IsMenu(hMenu));
++		if(!::IsMenu(hMenu))
++			return FALSE;
++		m_bContextMenu = true;
++		if(m_bUseKeyboardCues)
++			m_bShowKeyboardCues = m_bKeyboardInput;
++		T* pT = static_cast<T*>(this);
++		return pT->DoTrackPopupMenuEx(hMenu, uFlags, x, y, hWnd, lpParams);
++	}
++  // Hydra - end
++
+ 	BOOL SetMDIClient(HWND /*hWndMDIClient*/)
+ 	{
+ 		// Use CMDICommandBarCtrl for MDI support
