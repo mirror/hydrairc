@@ -19,7 +19,7 @@ Add an option so that people who've donated can change their quit messages
 
 add window buffer saving/reloading to all server/channel/query/dcc chat windows
 
-typing /<something> in a dcc chat sends "<something>" to the other person but doesn't echo it locally
+typing /<something> in a dcc chat sends "<something>" to the other person and doesn't echo it locally
 
 Quick Things To Do
 ==================
@@ -69,6 +69,10 @@ gradient filled docking pane titles
 
 Things To Do
 ============
+
+ <teb> could you have /onotice echo the text at the channel window? right now it goes to
+the server window instead (unless it's just my prefs? don't think so though) .. also, 
+same goes for logging your /onotices, they go to the server logfile instead of the channel
            
 [13:16] <Excelsior> which reminds me, i noticed your plugin had some code to detect multi processors
 [13:17] <Excelsior> HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager
@@ -1402,6 +1406,43 @@ BUG: atlregexp class is broken, need to find a replacement.
 
   If you want to play with regexps grab my little ATLRegExp program available
   from www.Hydras-World.com
+  
+  Possible solution taken from here:
+  
+  http://groups.google.com/group/microsoft.public.vc.atl/msg/b525c84477676c4f
+  
+  "I was running in the same problem with german umlauts.
+
+  The algorithm seems to be buggy. To word around that, copy the file
+
+  C:\Program Files\Microsoft Visual Studio .NET 2003\Vc7\atlmfc\include\atlrx.h
+
+  to your project path and make the following changes and include it in your cpp:
+
+  Line 637
+
+  <!new                unsigned char* usz = (unsigned char *) sz;
+  <!new                size_t u = (size_t) *usz;
+  !>old                size_t u = (size_t) *sz;
+
+  and Line 1181
+
+  <! new                               unsigned char uchStart = chStart;
+  <! new                               unsigned char uchEnd = chEnd;
+  <! new                               for (int i=uchStart; i<=uchEnd; i++)
+  !> old                               for (int i=chStart; i<=chEnd; i++)
+                                          pBits[i >> 3] |= 1 << (i & 0x7);
+
+  With these changes everthing should work fine.
+
+  Good luck!
+  Michael"
+  
+  Alternatives:
+  
+  http://research.microsoft.com/projects/greta/
+  http://www.boost.org/libs/regex/doc/index.html
+  
 
 BUG: channel monitor needs to be ENABLED (bot not actually visible) and then
   focus after restore fromsystray is ok.

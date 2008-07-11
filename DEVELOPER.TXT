@@ -4,10 +4,13 @@ HydraIRC Developer Notes
      IMPORTANT *** Read LICENSE.TXT first! *** IMPORTANT
 
 
-HydraIRC is written using Visual Studio .NET 2003 (no service packs,
-at the time of writing)
+HydraIRC is written using Visual Studio .NET 2003.
+The code has been ported to Visual Studio .NET 2005 and support for Visual Studio .NET 2003
+has been dropped.
 
-It's possible to compile it with VS.Net 2005 but i've not tried this myself.
+Visual Studio.NET 2005 including Service Pack 1 is REQUIRED to build HydraIRC.
+(due to changes in atlrx.h, failure to compile with SP1 will result access violations
+occuring in the regular expression matcher)
 
 If you want to start helping out, check out the TODO.TXT and try and fix some bugs,
 then start with some of the simpler things until you're used to the codebase.
@@ -28,7 +31,7 @@ Compiling
 Make sure you have a copy of the SVN tree, as well as the following files:
 
 HydraIRC-libxml2-20021126.zip
-WTL75_sf.exe - available from http://sourceforge.net/project/showfiles.php?group_id=109071&package_id=117803&release_id=376544
+WTL 8 - http://sourceforge.net/project/showfiles.php?group_id=109071
 
 HydraIRC is written and developed using Visual Studio .NET 2003 and this is the
 only supported build environment.  If you're using something else then you're on
@@ -37,18 +40,20 @@ your own.
 If you are using Visual Studio .NET 2003/2002/2005 you will also need to do the following:
 
  - Unzip HydraIRC-libxml2-20021126.zip to HydraIRC/libs/libxml2
- - Run WTL75_sf.exe and extract it anywhere you like. e.g. "D:\My Documents\Source\Libs\wtl75"
- - Install the WTL application wizard (from the wtl71 folder)
-  - If you are using VS.NET 2003 then double click wtl75\AppWiz\setup71.js
-  - If you are using VS.NET 2002 then double click wtl75\AppWiz\setup70.js
-  - If you are using VS.NET 2005 then double click wtl75\AppWiz\setup80.js
+ - extract it anywhere you like. e.g. "D:\My Documents\Source\Libs\wtl\8.0"
+ - Install the WTL application wizard (from the wtl folder)
+  - If you are using VS.NET 2005 then run AppWiz\setup80.js
+  - If you are using VS.NET 2003 then run AppWiz\setup71.js
+  - If you are using VS.NET 2002 then run AppWiz\setup70.js
  - Start up VC.net and adjust your VC project include directories
  - so that the directory you unzipped wtl75_4196.zip to appears first.
- - From the VS.net menus, seclt: tools/options/projects/VC++ Directories/Show directories for "Include Files"
-   then add it to the top of the list:
-   e.g. "D:\My Documents\Source\Libs\wtl75\include"
- - next add the folder "HydraIRC/include/altered_wtl_includes" to the top of the list (before the new wtl75 entry)
- - next add the folder "HydraIRC/include/altered_ms_includes" to the top of the list (before the new altered_wtl_includes entry)
+ - From the VS 2005 menus, select: tools/options, then expand projects & solutions/VC++ Directories
+   then select "Include Files" from the "Show directories for" dropdown
+ - From the VS 2003/2002 menus, select: tools/options/projects/VC++ Directories/Show directories for "Include Files" 
+ - Add the wtl 8 "include" folder to the top of list
+   e.g. "D:\My Documents\Source\Libs\wtl\8.0\include"   
+ - next add the folder "HydraIRC\include\altered_wtl_includes\8.0" to the top of the list (before the new wtl entry)
+ - next add the folder "HydraIRC\include\altered_ms_includes" to the top of the list (before the new altered_wtl_includes entry)
 
 
 If you are using Visual Studio .NET 2002 you will also need to do the following:
