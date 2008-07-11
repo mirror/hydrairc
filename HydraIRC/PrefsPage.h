@@ -82,3 +82,32 @@ public:
    BOOL OnPageValidate ( void ) { return TRUE; }
 //   LRESULT OnStnClickedStaticInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
+
+class CSelectChildPage : 
+  public CDialogImpl<CSelectChildPage>,
+  public CDialogResize<CSelectChildPage>,
+  public CPrefsPage
+{
+public:
+  enum { IDD = IDD_PREFS_SELECTCHILD };
+
+	BEGIN_MSG_MAP(CSelectChildPage)
+    MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+    CHAIN_MSG_MAP(CDialogResize<CSelectChildPage>)
+  END_MSG_MAP()
+
+  BEGIN_DLGRESIZE_MAP(CSelectChildPage)
+    DLGRESIZE_CONTROL(IDC_STATIC_INFO           ,DLSZ_SIZE_X)
+  END_DLGRESIZE_MAP()
+
+  LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+  {
+    DlgResize_Init(false,true,0);
+    return 0;
+  }
+
+   void OnPageDisplay ( void ) {}
+   void OnPageDone ( void ) {}
+   BOOL OnPageValidate ( void ) { return TRUE; }
+//   LRESULT OnStnClickedStaticInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+};

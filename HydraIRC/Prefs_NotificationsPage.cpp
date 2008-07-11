@@ -239,6 +239,9 @@ void CNotificationsPage::EditEvent(int ItemNum)
   if (!pNewNPI)
     return;
 
+  pNewNPI->m_MatchString = NULL;
+  pNewNPI->m_FileName = NULL;
+
   NotificationPrefInfo_t *pNPI = (NotificationPrefInfo_t *)m_EventsCtrl.GetItemData(ItemNum);
 
   CopyMemory(pNewNPI,pNPI,sizeof(NotificationPrefInfo_t));
@@ -335,6 +338,7 @@ LRESULT CNotificationsPage::OnBnClickedNotificationsNew(WORD /*wNotifyCode*/, WO
   else
   {
     if (pNewNPI->m_FileName) free(pNewNPI->m_FileName);
+    if (pNewNPI->m_MatchString) free(pNewNPI->m_MatchString);
     free(pNewNPI);
   }
 
@@ -354,6 +358,7 @@ LRESULT CNotificationsPage::OnBnClickedNotificationsDelete(WORD /*wNotifyCode*/,
     {
       g_pNewPrefs->m_NotificationPrefList.Remove(pNPI);
       if (pNPI->m_FileName) free(pNPI->m_FileName);
+      if (pNPI->m_MatchString) free(pNPI->m_MatchString);
       free(pNPI);
     }
     UpdateEventView(m_GroupCtrl.GetCurSel());

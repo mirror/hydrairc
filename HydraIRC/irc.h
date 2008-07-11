@@ -95,3 +95,7 @@
 #define RPL_LISTEND           323
 #define ERR_TOOMANYMATCHES    416 // only partly documented in rfc2812
 #define ERR_NOSUCHSERVER      402
+
+// server links (/LINKS command)
+#define RPL_LINKS             364
+#define RPL_ENDOFLINKS        365

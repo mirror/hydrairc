@@ -42,7 +42,8 @@
 #define PREFSPAGE_MESSAGES        6
 #define PREFSPAGE_COMMANDPROFILES 7
 #define PREFSPAGE_HIGHLIGHTING    8
-#define PREFSPAGE_FILTERS         9
+#define PREFSPAGE_SELECTCHILD     9
+//#define PREFSPAGE_FILTERS         10
 
 class CPrefsDlg : 
   public CDialogImpl<CPrefsDlg>,
@@ -57,7 +58,7 @@ public:
 	enum { IDD = IDD_PREFS };
 
   CDlgContainerCtrl m_CtrlContainer;
-  CIdentitiesPage m_IdentitiesPage;
+  CIdentitiesPage m_IdentitiesPage;  
   CNotImplementedPage m_NotImplementedPage;
   CNotificationsPage m_NotificationsPage;
   CBuddyGroupsPage m_BuddyGroupsPage;
@@ -66,6 +67,7 @@ public:
   CLoggingPage m_LoggingPage;
   CCommandProfilesPage m_CommandProfilesPage;
   CHighlightingPage m_HighlightingPage;
+  CSelectChildPage m_SelectChildPage;
   // TODO: Finish filters page.
   //CFiltersPage m_FiltersPage;
 

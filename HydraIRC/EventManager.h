@@ -30,7 +30,7 @@
 #pragma once
 
 //ET_* are bitmasks.
-#define ET_NORMAL     0 // fire the event NOW, and half execution until the event has completed.
+#define ET_NORMAL     0 // fire the event NOW, and halt execution until the event has completed.
 #define ET_TIMED      1 // fire the event after a delay
 #define ET_REPEAT     2 // repeat the event, only valid for timed events
 #define ET_BROADCAST  4 // tells all listeners about the event.
@@ -75,7 +75,7 @@ public:
   BOOL DoEvent(CListener *pFrom, BOOL Broadcast, int EventID, void *pData = NULL);
   // delete all events with matching listener and EventID, or leave EventID as -1
   // and ALL events from the listener will be deleted.
-  BOOL DeleteEvents(CListener *pFrom, int EventID = -1);
+  BOOL DeleteEvents(CListener *pFrom, int EventID = -1, void *pData = NULL);
 
   // Call this every 1 second to process the timed events and other
   // non-timed events.

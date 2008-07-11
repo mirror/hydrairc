@@ -57,7 +57,7 @@ void ExtractFileName (const char *path, char *dest)
   *dest = 0;
 }
 
-CDCCTransfer::CDCCTransfer(IRCServer *pServer, char *OtherNick, char *FileName, int Address, int Port, int Size,int Flags)
+CDCCTransfer::CDCCTransfer(IRCServer *pServer, char *OtherNick, char *FileName, unsigned long Address, int Port, unsigned long Size, int Flags)
 {
   if (!pServer || !FileName)
     return; // TODO: hmm, need an exception..
@@ -677,10 +677,13 @@ void CDCCTransfer::Disconnect( char *Reason )
   // if we have a server, and the server instance is still valid...
   BOOL ServerStillValid = m_pServer && (g_ServerList.Find(m_pServer) >= 0);
 
+  // display message in server window
+  char percentescapedbuf[512*2 + 1];
+  EscapePercentCharacters(percentescapedbuf,message,sizeof(percentescapedbuf));
+
   if (ServerStillValid)
   {
-    // display message in server window
-    m_pServer->Printf(BIC_CTCP,message); // TODO: BIC_QUERYTEXT ?  BIC_TRANSFERINFO ???
+      m_pServer->Printf(BIC_CTCP,percentescapedbuf); // TODO: BIC_QUERYTEXT ?  BIC_TRANSFERINFO ???
   }
 
   if (pLastNE && pLastNE->m_Flags & NE_FLAG_LOGINEVENTLOG)
@@ -703,7 +706,7 @@ void CDCCTransfer::Disconnect( char *Reason )
   {
     pActiveServer = FindIRCServer(g_pMainWnd->MDIGetActive(),FALSE);
     if ((pActiveServer != m_pServer) || (m_pServer == NULL) || (pActiveServer == NULL))
-      HydraIRC_ActiveWindowPrintf(BIC_CTCP,message); // TODO: BIC_QUERYTEXT ?  BIC_TRANSFERINFO ???
+      HydraIRC_ActiveWindowPrintf(BIC_CTCP,percentescapedbuf); // TODO: BIC_QUERYTEXT ?  BIC_TRANSFERINFO ???
   }
 
   // TODO: try and requeue/resend if failed?

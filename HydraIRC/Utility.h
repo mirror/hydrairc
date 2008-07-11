@@ -147,7 +147,9 @@ public:
 
 //#define IRCMODE(x) (1<<(int((x)-'a'+1))) //Generates a bitmask for a one character mode
 
+#pragma warning(disable : 4293)
 #define IRCMODE(x) (x >= 'a' ? (__int64(1)<<(int((x)-'a'+1))) : (__int64(1)<<(int((x)-'A'+27)))) //O.o
+//#pragma warning(default : 4293) // doesn't work
 
 #define IRCMODE_NORMAL (1<<0)
 #define IRCMODE_VOICE  IRCMODE('v')
@@ -979,6 +981,29 @@ public:
     m_Position = NULL;
   }
 };
+
+class CListener;
+
+class CTimerCommand {
+
+public:
+  int m_Delay;
+  char *m_CommandProfileName;
+  CListener *m_pListener;
+
+public:
+  CTimerCommand(int Delay, char *CommandProfileName, CListener *pListener) {
+    m_Delay = Delay;
+    m_CommandProfileName = strdup(CommandProfileName);
+    m_pListener = pListener;
+  }
+
+  ~CTimerCommand() {
+    if (m_CommandProfileName)
+      free(m_CommandProfileName);
+  }
+};
+
 
 // Functions defined in Utility.cpp
 int ReplaceString(char **buf,const char *s1,const char *s2); // replace all occurences of s1 in buf with s2, reallocating as needed

@@ -56,6 +56,7 @@ public:
   void LoadPlugin(const char *FileName ); // relative path+filename to g_HomeDir
 
   void RefreshPlugins( void );
+  void ListPlugins( void );
 
   BOOL Unload( HydraIRCPlugin *pPlugin,const BOOL Force, const BOOL IgnoreInUse);
   int UnloadByName(const char *PluginName, const BOOL Force, const BOOL IgnoreInUse);

@@ -215,6 +215,7 @@ LRESULT CBuddyGroupsPage::OnBnClickedBuddyGroupsDelete(WORD /*wNotifyCode*/, WOR
     {
       g_pNewPrefs->m_NotificationPrefList.Remove(pNPI);
       if (pNPI->m_FileName) free(pNPI->m_FileName);
+      if (pNPI->m_MatchString) free(pNPI->m_MatchString);
       free(pNPI);
       i--; // step back one
     }

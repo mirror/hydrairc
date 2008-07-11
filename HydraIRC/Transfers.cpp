@@ -53,7 +53,7 @@ TransfersManager::~TransfersManager( void )
   delete m_pTransfersView;
 }
 
-void TransfersManager::ReceiveFile(IRCServer *pServer,char *From, char *FileName, int Address, int Port, long Size)
+void TransfersManager::ReceiveFile(IRCServer *pServer,char *From, char *FileName, unsigned long Address, int Port, unsigned long Size)
 {
   // TODO: check we're not receiving the same file from someone else
   // we might be if the user queues themselves up on several XDCC bots.

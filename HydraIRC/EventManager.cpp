@@ -81,7 +81,7 @@ void CEventManager::RemoveListener(CListener *pListener)
  * Note: NULL Listeners's *ARE* valid.  an event can be created by
  * somethinbg that's not a listener.
  */
-BOOL CEventManager::DeleteEvents(CListener *pFrom, int EventID)
+BOOL CEventManager::DeleteEvents(CListener *pFrom, int EventID, void *pData)
 {
   CNode *pNode,*pTempNode;
   EventQueueItem_t *pEI;
@@ -92,7 +92,7 @@ BOOL CEventManager::DeleteEvents(CListener *pFrom, int EventID)
   {
     pEI = (EventQueueItem_t *)pNode->m_Data;
 
-    if (pEI->pFrom == pFrom && (pEI->EventID == EventID || EventID == -1) && pEI->Processing == FALSE)
+    if (pEI->pFrom == pFrom && (pEI->EventID == EventID || EventID == -1) && (pEI->pData == pData || pData == NULL) && pEI->Processing == FALSE)
     {
 #ifdef DEBUG
       if (EventID == -1)

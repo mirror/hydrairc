@@ -346,6 +346,7 @@ enum EventIDs
   EV_PREFSCHANGED,
   // Add new events here
   EV_CH_RETRYJOIN,
+  EV_CW_TIMER,
 
   // Common broadcasted events
   EV_TICK, // sent every one second to all listeners

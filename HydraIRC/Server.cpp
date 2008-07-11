@@ -79,30 +79,39 @@ BOOL UpdateServerDetails(IRCServerDetails *pServerDetails)
 char *g_QuitMessages[] = 
 {
   //"WOW! This IRC Client ownz! \002HydraIRC\002 -> http://www.hydrairc.com <-",
-  //"\002HydraIRC\002 -> http://www.hydrairc.com <- \\o/",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- \\o/",
   //"\002HydraIRC\002 -> http://www.hydrairc.com <- Get \002hot chicks\002 here!",
-  //"\002HydraIRC\002 -> http://www.hydrairc.com <- Chicks dig it",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Chicks dig it",
   //"The IRC Client of the Gods! -> http://www.hydrairc.com <- \002HydraIRC\002",
   //"\002HydraIRC\002 -> http://www.hydrairc.com <- irc client ownage!",
-  //"\002HydraIRC\002 -> http://www.hydrairc.com <- *\002I\002* use it, so it must be good!",
-  //"\002HydraIRC\002 -> http://www.hydrairc.com <- Nine out of ten l33t h4x0rz prefer it",
-  //"\002HydraIRC\002 -> http://www.hydrairc.com <- s0 d4Mn l33t |t'z 5c4rY!",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- *\002I\002* use it, so it must be good!",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Nine out of ten l33t h4x0rz prefer it",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- s0 d4Mn l33t |t'z 5c4rY!",
   //"\002HydraIRC\002 rocks! -> http://www.hydrairc.com <-", 
-  //"I love my \002HydraIRC\002 -> http://www.hydrairc.com <-",
-  "Like VS.net's GUI?  Then try \002HydraIRC\002 -> http://www.hydrairc.com <-",
+  "I love my \002HydraIRC\002 -> http://www.hydrairc.com <-",
+  //"Like VS.net's GUI?  Then try \002HydraIRC\002 -> http://www.hydrairc.com <-",
   "\002HydraIRC\002 -> http://www.hydrairc.com <-",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- The dawn of a new IRC era",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- IRC has never been so good",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- The professional IRC Client",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- Try something fresh",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- Leading Edge IRC",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- The future of IRC",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- State of the art IRC",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- The dawn of a new IRC era",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- IRC has never been so good",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- The professional IRC Client :D",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- Try something fresh",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- Leading Edge IRC",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- The future of IRC",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- State of the art IRC",
   "\002HydraIRC\002 -> http://www.hydrairc.com <- IRC with a difference",
   "\002HydraIRC\002 -> http://www.hydrairc.com <- Go on, try it!",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- 100,000+ downloads can't be wrong",
-  "\002HydraIRC\002 -> http://www.hydrairc.com <- IRC for those that like to be different",
-  "Want to be different? \002HydraIRC\002 -> http://www.hydrairc.com <-",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- 100,000+ downloads can't be wrong",
+  //"\002HydraIRC\002 -> http://www.hydrairc.com <- IRC for those that like to be different",
+  "Want to be different? Try \002HydraIRC\002 -> http://www.hydrairc.com <-",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- The alternative IRC client",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Like it?  Visit #hydrairc on EFNet",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Would you like to know more?",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Organize your IRC",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Now with extra fish!",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Wibbly Wobbly IRC",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- It'll be on slashdot one day...",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- In tests, 0x09 out of 0x0A l33t h4x0rz prefer it :)",
+  "\002HydraIRC\002 -> http://www.hydrairc.com <- Po-ta-to, boil em, mash em, stick em in a stew.",
   "Try \002HydraIRC\002 -> http://www.hydrairc.com <-" 
 };
 
@@ -1244,7 +1253,7 @@ void IRCServer::ChannelBroadcast(int Contents, const char *format, ...)
   }
 }
 
-// all output to a server goes through this
+// all output to an server window goes through this
 // to print directly to a server window, use IRCServer::Printf()
 // for all normal output use this IRCServer::OutputFormatter()
 // the output formatter takes a given input and creates logfile
@@ -1820,6 +1829,63 @@ void IRCServer::Parse( char *processstr )
       }
       break;
 
+    case RPL_LINKS: // "<mask> <server> :<hopcount> <server info>"
+      {
+        char *mask, *server, *hopcount, *info;
+        mask = strtok(rest, " ");
+        server = UseEmptyString(strtok(NULL, " "));
+        hopcount = UseEmptyString(strtok(NULL, " "));
+        info = UseEmptyString(strtok(NULL, ""));
+
+        if (*hopcount == ':') 
+          hopcount++;
+
+        m_Variables[VID_PARAM1] = mask;
+        m_Variables[VID_PARAM2] = server;
+        m_Variables[VID_PARAM3] = hopcount;
+        m_Variables[VID_PARAM4] = info;
+        OutputFormatter(BIC_NOTICE,RPL_LINKS);
+
+        //
+        // add the to the list of servers!
+        //
+
+        // Note: the RPL_LINKS command returns non-public servers and doesn't provide port number information, 
+        // we also use the network id from the current connection.
+
+        IRCServerDetails *pServerDetails = new IRCServerDetails;
+
+        pServerDetails->m_Port = 6667; // NOTE: assuming a default even though the server in the links list might not support connections on this port
+        pServerDetails->m_NetworkID = m_pDetails->m_NetworkID;
+        pServerDetails->m_Flags = ISDF_CUSTOMLIST;
+        SetString(pServerDetails->m_Name, mask);
+        SetString(pServerDetails->m_Description, info);
+
+        IRCServerDetails *pOther;
+        int i;
+        for (i = 0; i < g_ServerDetailsList.GetSize(); i++ )
+        {
+          pOther = g_ServerDetailsList[i];
+
+          // a comparison of port and address == duplicate
+          // because the one in the user's profile will generally
+          // have MORE information (or at least, up-to-date information)
+          // e.g.  password change, different priority, etc.
+          if (pOther->m_Port == pServerDetails->m_Port &&
+              stricmp(pOther->m_Name,pServerDetails->m_Name) == 0)
+          {
+            // this server is in the list already, remove it (as we'll add the new one in a moment)
+            g_ServerDetailsList.Remove(pOther);
+            delete pOther;
+
+            break; // don't look for any more
+          }
+        }
+
+        g_ServerDetailsList.Add(pServerDetails); // TODO: insert sorted by description (or name?), check for duplicates
+      }
+      break;
+
     case RPL_LISTSTART: // "Channel :Users  Topic"
       {
         char *a, *b;
@@ -2104,7 +2170,7 @@ void IRCServer::Parse( char *processstr )
     case ERR_NOSUCHCHANNEL: // no such channel
     case ERR_CHANNELISFULL: // channel is full +l
     case ERR_INVITEONLYCHAN: // channel is invite only
-    case ERR_NEEDREGGEDNICK: // need registered nick
+    case ERR_NEEDREGGEDNICK: // need registered nick - on freenode you get this when joining a channel, even though you joined the channel
     case ERR_BADCHANNELKEY: // channel is +k
       {
         char *channelname, *a;
@@ -2130,7 +2196,10 @@ void IRCServer::Parse( char *processstr )
           if (pChannel->m_pChildWnd && pChannel->m_pChildWnd->IsWindow())
           {
             pChannel->OutputFormatter(BIC_NOTICE,num);
-            pChannel->OnJoinError(num);
+            if (num != ERR_NEEDREGGEDNICK)
+            {
+              pChannel->OnJoinError(num);
+            }
           }
           else
             delete pChannel;
@@ -3406,7 +3475,7 @@ void IRCServer::ForwardMessage(const int Contents, const char *Message)
   if (m_pChildWnd && m_pChildWnd->m_hWnd != g_pMainWnd->MDIGetActive())
   {
     char percentescapedbuf[512*2 + 1];
-    EscapePercentCharacters(percentescapedbuf,Message,sizeof(percentescapedbuf)-1);
+    EscapePercentCharacters(percentescapedbuf,Message,sizeof(percentescapedbuf));
 
 
     IRCServer *pActiveServer;
@@ -3543,11 +3612,13 @@ void IRCServer::OnNetEvent(int Event, int Error)
       }
       break;
     case FD_CLOSE:
-      InitVariables();
-      m_Variables[VID_ALL] = g_DefaultStrings[DEFSTR_Socket_Disconnected];
-      OutputFormatter(BIC_ERROR,APP_ERROR);
-      //Printf(BIC_ERROR,g_DefaultStrings[DEFSTR_Socket_Disconnected]);
-      Disconnect();
+      if (m_Status == SVR_STATE_CONNECTED) {
+        InitVariables();
+        m_Variables[VID_ALL] = g_DefaultStrings[DEFSTR_Socket_Disconnected];
+        OutputFormatter(BIC_ERROR,APP_ERROR);
+        //Printf(BIC_ERROR,g_DefaultStrings[DEFSTR_Socket_Disconnected]);
+        Disconnect();
+      }
       break;
     case FD_READ:
       {

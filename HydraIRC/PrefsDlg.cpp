@@ -67,7 +67,7 @@ void CPrefsDlg::ShowPage( int PageNum )
 
 LRESULT CPrefsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {  
-  HTREEITEM hItem,hParent;
+  HTREEITEM hItem,hParent,hChild,hItemToSelect;
 
 	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 			IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
@@ -81,31 +81,55 @@ LRESULT CPrefsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
   m_PrefsTree.Attach(GetDlgItem(IDC_PREFSTREE));
 
   // Add the items in whatever order we please...
-  hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "User Identities", 0, 0, 0, 0, PREFSPAGE_IDENTITIES, TVI_ROOT, TVI_LAST);
 
-  hParent=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Buddy Groups", 0, 0, 0, 0, PREFSPAGE_BUDDYGROUPS, TVI_ROOT,TVI_LAST);
-  hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Notifications", 0, 0, 0, 0, PREFSPAGE_NOTIFICATIONS, hParent,TVI_LAST);
+  hParent=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Users and Identification", 0, 0, 0, 0, PREFSPAGE_SELECTCHILD, TVI_ROOT,TVI_LAST);    
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "User Identities", 0, 0, 0, 0, PREFSPAGE_IDENTITIES, hParent, TVI_LAST);
+  hItemToSelect = hChild;
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "IdentD Server", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
   m_PrefsTree.Expand(hParent,TVE_EXPAND);
 
-  hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Logging", 0, 0, 0, 0, PREFSPAGE_LOGGING, TVI_ROOT,TVI_LAST);
-  hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Messages", 0, 0, 0, 0, PREFSPAGE_MESSAGES, TVI_ROOT,TVI_LAST);
-  hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Command Profiles", 0, 0, 0, 0, PREFSPAGE_COMMANDPROFILES, TVI_ROOT,TVI_LAST);
-  hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Misc", 0, 0, 0, 0, PREFSPAGE_MISC, TVI_ROOT,TVI_LAST);
+  hParent=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Display", 0, 0, 0, 0, PREFSPAGE_SELECTCHILD, TVI_ROOT,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Server List", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "User List", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Channel Monitor", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Server Windows", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Channel Windows", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Query Windows", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
+  m_PrefsTree.Expand(hParent,TVE_EXPAND);
+
+  
+
+  hParent=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Notifications and Alerts", 0, 0, 0, 0, PREFSPAGE_SELECTCHILD, TVI_ROOT, TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Messages", 0, 0, 0, 0, PREFSPAGE_MESSAGES, hParent,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "User Groups", 0, 0, 0, 0, PREFSPAGE_BUDDYGROUPS, hParent, TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Notifications", 0, 0, 0, 0, PREFSPAGE_NOTIFICATIONS, hParent, TVI_LAST);
+  m_PrefsTree.Expand(hParent,TVE_EXPAND);
+
+  hParent=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Logs and History", 0, 0, 0, 0, PREFSPAGE_SELECTCHILD, TVI_ROOT, TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Logging", 0, 0, 0, 0, PREFSPAGE_LOGGING, hParent,TVI_LAST);
+  m_PrefsTree.Expand(hParent,TVE_EXPAND);
+
+  hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Scripts", 0, 0, 0, 0, PREFSPAGE_COMMANDPROFILES, TVI_ROOT,TVI_LAST);
+
+  hParent=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Advanced", 0, 0, 0, 0, PREFSPAGE_SELECTCHILD, TVI_ROOT,TVI_LAST);
+  hChild=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "All Settings", 0, 0, 0, 0, PREFSPAGE_MISC, hParent,TVI_LAST);
+
   // TODO: Finish filters page.
   //hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Filters", 0, 0, 0, 0, PREFSPAGE_FILTERS, TVI_ROOT,TVI_LAST);
   // TODO: Ditch the highlighting page...  not used!
   //hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Highlighting", 0, 0, 0, 0, PREFSPAGE_HIGHLIGHTING, TVI_ROOT,TVI_LAST);
+  /*
   hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Display", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, TVI_ROOT,TVI_LAST);
 
   hParent=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Networks", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, TVI_ROOT,TVI_LAST);
   hItem=m_PrefsTree.InsertItem(TVIF_TEXT | TVIF_PARAM, "Servers", 0, 0, 0, 0, PREFSPAGE_NOTIMPLEMENTED, hParent,TVI_LAST);
   m_PrefsTree.Expand(hParent,TVE_EXPAND);
+  */
 
   m_CtrlContainer.SubclassWindow(GetDlgItem(IDC_PREFS_PLACEHOLDER));
 
-  // then add the page classes to the list of pages.
   m_NotImplementedPage.Create(m_CtrlContainer);
-  m_NotImplementedPage.SetDetails("Not implemented yet","Sorry!");
+  m_NotImplementedPage.SetDetails("","");
   m_PrefsPages.Add(&m_NotImplementedPage);
   m_CtrlContainer.AddItem(m_NotImplementedPage); // 0
 
@@ -115,7 +139,7 @@ LRESULT CPrefsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
   m_CtrlContainer.AddItem(m_IdentitiesPage); // 1
 
   m_BuddyGroupsPage.Create(m_CtrlContainer);
-  m_BuddyGroupsPage.SetDetails("Buddy Groups","Add buddies to groups");
+  m_BuddyGroupsPage.SetDetails("User Groups","Add users to groups");
   m_PrefsPages.Add(&m_BuddyGroupsPage);
   m_CtrlContainer.AddItem(m_BuddyGroupsPage); // 2
 
@@ -149,11 +173,17 @@ LRESULT CPrefsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
   m_PrefsPages.Add(&m_HighlightingPage);
   m_CtrlContainer.AddItem(m_HighlightingPage); // 8
 
+  // then add the page classes to the list of pages.
+  m_SelectChildPage.Create(m_CtrlContainer);
+  m_SelectChildPage.SetDetails("","");
+  m_PrefsPages.Add(&m_SelectChildPage);
+  m_CtrlContainer.AddItem(m_SelectChildPage); // 9
+
   /* TODO: Finish filters page.
   m_FiltersPage.Create(m_CtrlContainer);
   m_FiltersPage.SetDetails("Filters","Show or limit channel information");
   m_PrefsPages.Add(&m_FiltersPage);
-  m_CtrlContainer.AddItem(m_FiltersPage); // 9
+  m_CtrlContainer.AddItem(m_FiltersPage); // 10
   */
 
   // and select a page...
@@ -163,6 +193,7 @@ LRESULT CPrefsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
   }
   else
   {
+    m_PrefsTree.SelectItem(hItemToSelect);
     ShowPage(m_DefaultPage);
   }
   return TRUE;

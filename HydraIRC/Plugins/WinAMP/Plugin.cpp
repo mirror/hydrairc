@@ -150,7 +150,7 @@ string seconds2string(int seconds)
 //This function accepts three strings, a search term, the string to search in, and the string to replace our search with.
 string ReplaceWildcard(string strNeedle, string strHaystack, string strReplacement)
 {
-  int intStartRepl = strPlayingText.find(strNeedle);
+  size_t intStartRepl = strPlayingText.find(strNeedle);
 
   if(intStartRepl != string::npos)
   {
@@ -208,7 +208,7 @@ void WinampDisplay()
     //Get our Winamp Info. Winamp info is prefixed wa
 
     //waPlayingState
-    int waPlayStateInt = SendMessage(hWinamp, WM_WA_IPC, 0, IPC_ISPLAYING); //Ask Winamp the state.
+    LRESULT waPlayStateInt = SendMessage(hWinamp, WM_WA_IPC, 0, IPC_ISPLAYING); //Ask Winamp the state.
     string waPlayState;
     switch (waPlayStateInt)
     {
@@ -218,7 +218,7 @@ void WinampDisplay()
     }
 
     //waCurrentTime
-    int waCurrentTimeInt = SendMessage(hWinamp, WM_WA_IPC, 0, IPC_GETOUTPUTTIME); //The current position in miliseconds (-1 = not playing)
+    LRESULT waCurrentTimeInt = SendMessage(hWinamp, WM_WA_IPC, 0, IPC_GETOUTPUTTIME); //The current position in miliseconds (-1 = not playing)
 
     //If WinAmp isn't playing, it returns -1 as the current time.
     //For our purposes, this is the same as being at time 0
@@ -230,10 +230,10 @@ void WinampDisplay()
     //WinAmp returns the playing time in milliseconds, which we need to convert to seconds for our purposes
     waCurrentTimeInt /= 1000;
 
-    string waCurrentTime = seconds2string(waCurrentTimeInt);
+    string waCurrentTime = seconds2string((int)waCurrentTimeInt);
 
     //waCurrentLength
-    int waCurrentLengthInt = SendMessage(hWinamp, WM_WA_IPC, 1, IPC_GETOUTPUTTIME); //The length in seconds
+    LRESULT waCurrentLengthInt = SendMessage(hWinamp, WM_WA_IPC, 1, IPC_GETOUTPUTTIME); //The length in seconds
 
     //If WinAmp isn't playing, it returns -1 as the current length.
     //For our purposes, this is the same as a length of 0
@@ -242,7 +242,7 @@ void WinampDisplay()
       waCurrentLengthInt = 0;
     }
 
-    string waCurrentLength = seconds2string(waCurrentLengthInt);
+    string waCurrentLength = seconds2string((int)waCurrentLengthInt);
 
 
     //waCurrentPcnt - Calculate percentages
@@ -253,7 +253,7 @@ void WinampDisplay()
     if (waCurrentLengthInt != 0)
     {
       //Calculate our percent of play
-      waCurrentPcntInt = waCurrentTimeInt * 100 / waCurrentLengthInt;
+      waCurrentPcntInt = int (waCurrentTimeInt * 100 / waCurrentLengthInt);
     }
     else
     {
@@ -301,15 +301,15 @@ void WinampDisplay()
     }
 
     //waSampleRate
-    int waSampleRateInt = SendMessage(hWinamp, WM_USER, 0, IPC_GETINFO);
-    string waSampleRate = int2string(waSampleRateInt) + "kHz";
+    LRESULT waSampleRateInt = SendMessage(hWinamp, WM_USER, 0, IPC_GETINFO);
+    string waSampleRate = int2string((int)waSampleRateInt) + "kHz";
 
     //waBitRate
-    int waBitRateInt = SendMessage(hWinamp, WM_USER, 1, IPC_GETINFO);
-    string waBitRate = int2string(waBitRateInt) + "kbps";
+    LRESULT waBitRateInt = SendMessage(hWinamp, WM_USER, 1, IPC_GETINFO);
+    string waBitRate = int2string((int)waBitRateInt) + "kbps";
 
     //waChannels
-    int waChannelsInt = SendMessage(hWinamp, WM_USER, 2, IPC_GETINFO);
+    LRESULT waChannelsInt = SendMessage(hWinamp, WM_USER, 2, IPC_GETINFO);
     string waChannels (waChannelsInt==2?"stereo":"mono"); //Simple Trinary. Need to figure out what to do with 0 or >2 channels.
 
 
@@ -327,8 +327,13 @@ void WinampDisplay()
     //Remove playlist position number (Add 2 to include period and space after)
     waTitle = waTitle.substr(waTitle.find(".")+2, waTitle.size());
 
-    //Remove the Winamp tag at the end of the string (Subtract 1 to remove trailing space)
-    waTitle = waTitle.substr(0, waTitle.rfind("-") - 1);
+    //Remove the Winamp tag at the end of the string 
+    int titlePos = waTitle.rfind(" - Winamp");
+    if (titlePos >= 0) {
+      waTitle = waTitle.substr(0, titlePos);
+    }
+    // TODO: find a better way is the response from Media Monkey contains a
+    // - to seperate the artist from the track name and has no trailing Winamp tag
 
     //Replace the values in our playing string
     strPlayingText = ReplaceWildcard("%title%", strPlayingText, waTitle);
@@ -524,57 +529,67 @@ void CPlugin::OnActivate( void )
     sys_Printf(BIC_ERROR,"%s: Failed to get imagelist!\n",Plugin.m_Name);
   */
 
+#ifdef HYDRAIRC_0.3.163
+/*
+  In HydraIRC <= 0.3.163 HydraIRC_GetToolbar returned the HWND of the toolbar itself
+  but attachking a ReBar and Using GetBandInfo no-longer worked (probably due to WTL 8 changes)
+  so in 0.3.164 it has been changed to returning the actual child window the holds the buttons.
+*/
   g_hToolBarWnd = HydraIRC_GetToolbar();
-  if (g_hToolBarWnd)
-    g_Rebar.Attach(g_hToolBarWnd);
-  else
+  if (!g_hToolBarWnd) {
     sys_Printf(BIC_ERROR,"%s: Failed to get toolbar window!\n",Plugin.m_Name);
+    return;
+  }
+  
+  g_Rebar.Attach(g_hToolBarWnd);
 
-  //if (g_hToolBarWnd && g_hToolbarImageList)
-  if (g_hToolBarWnd)// && g_hToolbarImageList)
-  {
-  	REBARBANDINFO rbbi = { sizeof(REBARBANDINFO), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE | RBBIM_STYLE };
-    if (g_Rebar.GetBandInfo(1,&rbbi) != 0)
-    {
-      g_Toolbar.Attach(rbbi.hwndChild);
-
-      //g_ToolbarBitmap.LoadBitmap(IDB_TOOLBAR);
-
-      //g_ToolbarImageList.Add( g_ToolbarBitmap, RGB(255,0,255));
-
-      g_ToolbarImageList.CreateFromImage(IDB_TOOLBAR, 16, 17, RGB(255,0,255), IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-      g_Toolbar.SetImageList(g_ToolbarImageList,g_ImageListID);
-
-	    //g_ToolbarImageList.Add( g_ToolbarBitmap, RGB(255,0,255));    
-
-      TBBUTTON tb[TOOLBAR_BUTTON_COUNT];
-	    memset(tb, 0, sizeof(tb));
-	    int n = 0, image = 0;//g_FirstImage;
-
-	    tb[n].iBitmap = 0;
-      tb[n].idCommand = ToolbarIDs[n];
-	    tb[n].fsState = TBSTATE_ENABLED;
-	    tb[n].fsStyle = TBSTYLE_SEP;
-
-	    n++;
-	    tb[n].iBitmap = MAKELONG(image++,g_ImageListID);
-	    tb[n].idCommand = ToolbarIDs[n];
-	    tb[n].fsState = TBSTATE_ENABLED;
-	    tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-      //tb[n].iString = (int)("Show Winamp song\0");
-
-      g_ButtonsAdded = g_Toolbar.AddButtons(TOOLBAR_BUTTON_COUNT,tb);
-
-      // TODO: force a recalcuate of the toolbar's ideal size
-      // see WTL::CFrameWindowImplBase::AddSimpleReBarBandCtrl
-      // the bit where it calculates the size.
-
-    }
-    else
-      sys_Printf(BIC_ERROR,"%s: Failed to get toolbar band info!\n",Plugin.m_Name);
-
+	//REBARBANDINFO rbbi = { sizeof(REBARBANDINFO), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE | RBBIM_STYLE };
+  REBARBANDINFO rbbi = { sizeof(REBARBANDINFO), RBBIM_CHILD };
+  if (g_Rebar.GetBandInfo(1,&rbbi) == 0) {
+    sys_Printf(BIC_ERROR,"%s: Failed to get toolbar band info!\n",Plugin.m_Name);
+    return;
+  }
+  g_Toolbar.Attach(rbbi.hwndChild);
+#else
+  HWND toolbarChild = HydraIRC_GetToolbar();
+  if (!toolbarChild) {
+    sys_Printf(BIC_ERROR,"%s: Failed to get toolbar band info!\n",Plugin.m_Name);
+    return;
   }
 
+  g_Toolbar.Attach(toolbarChild);
+#endif
+
+  //g_ToolbarBitmap.LoadBitmap(IDB_TOOLBAR);
+
+  //g_ToolbarImageList.Add( g_ToolbarBitmap, RGB(255,0,255));
+
+  g_ToolbarImageList.CreateFromImage(IDB_TOOLBAR, 16, 17, RGB(255,0,255), IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+  g_Toolbar.SetImageList(g_ToolbarImageList,g_ImageListID);
+
+  //g_ToolbarImageList.Add( g_ToolbarBitmap, RGB(255,0,255));    
+
+  TBBUTTON tb[TOOLBAR_BUTTON_COUNT];
+  memset(tb, 0, sizeof(tb));
+  int n = 0, image = 0;//g_FirstImage;
+
+  tb[n].iBitmap = 0;
+  tb[n].idCommand = ToolbarIDs[n];
+  tb[n].fsState = TBSTATE_ENABLED;
+  tb[n].fsStyle = TBSTYLE_SEP;
+
+  n++;
+  tb[n].iBitmap = MAKELONG(image++,g_ImageListID);
+  tb[n].idCommand = ToolbarIDs[n];
+  tb[n].fsState = TBSTATE_ENABLED;
+  tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+  //tb[n].iString = (int)("Show Winamp song\0");
+
+  g_ButtonsAdded = g_Toolbar.AddButtons(TOOLBAR_BUTTON_COUNT,tb);
+
+  // TODO: force a recalcuate of the toolbar's ideal size
+  // see WTL::CFrameWindowImplBase::AddSimpleReBarBandCtrl
+  // the bit where it calculates the size.
 }
 
 void CPlugin::OnDeactivate( void )

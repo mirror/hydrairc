@@ -41,5 +41,7 @@
 // We've specified _TABBEDMDI_MESSAGES_EXTERN_REGISTER
 // (see TabbedMDI.h)
 #ifdef USE_TABBEDMDI
+#if (_MSC_VER < 1300)
   RegisterTabbedMDIMessages g_RegisterTabbedMDIMessages;
+#endif
 #endif

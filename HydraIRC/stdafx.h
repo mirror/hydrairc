@@ -83,6 +83,7 @@
 
 // ATL/GUI includes start here
 #include <atlbase.h>
+#include <atlstr.h>
 #include <atlapp.h>
 
 extern CAppModule _Module;
@@ -98,13 +99,13 @@ extern CAppModule _Module;
 #include <atlsplit.h>
 
 #include <atlmisc.h>
-#include <atlstr.h>
 
 //#include <atlcom.h>
 
 //#include <atlcoll.h>
 //#include <atltypes.h>
 
+// atl should be downloaded and install from here http://www.codeplex.com/AtlServer/
 #include <atlrx.h>  // RegExps
 
 /////////////////////////////////////////////////////////////////////////

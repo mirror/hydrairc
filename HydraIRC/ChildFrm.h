@@ -53,6 +53,7 @@ private:
   WindowPrefs *m_pWindowPrefs; // null until GetWindowPrefs is called
   int m_LastSize; // SIZE_*, see WM_SIZE Notification
   short m_InfoUpdateTicks;
+  CSimpleArray<CTimerCommand*> m_TimerCommands;
 
 public:
 
@@ -169,7 +170,7 @@ public:
     MESSAGE_HANDLER(WM_SETFOCUS,           OnSetFocus)
     MESSAGE_HANDLER(WM_MDIACTIVATE,        OnMDIActivate)
     MESSAGE_HANDLER(WM_FORWARDMSG,         OnForwardMsg)
-    // handle mouse activate correctly (Daniel Bowden, see WTL Mailing list - digest 718)
+    // handle mouse activate correctly (Daniel Bowen, see WTL Mailing list - digest 718)
 		MESSAGE_HANDLER(WM_MOUSEACTIVATE,      OnMouseActivate)
     MESSAGE_HANDLER(WM_COPY,               OnEditCopy)
 
@@ -271,6 +272,9 @@ public:
   void ProcessTextInput(char *Buffer, BOOL Parse);
   IRCServer *GetServer( void );
 
+  void AddTimerCommand(int Delay, char *CommandProfileName);
+  CTimerCommand *GetTimerCommand(char *CommandProfileName);
+
 private:
   void InitialiseWindows( void );
 
@@ -299,6 +303,8 @@ public:
   void CMD_Server         (char *Args, BOOL NewWindow = FALSE );
   void CMD_Raw            (char *Args );
   void CMD_Exec           (char *Args );
+  void CMD_Timer          (char *Args );
+  void CMD_StopTimer      (char *Args );
   void CMD_Nick           (char *Args );
   void CMD_GetNick        (char *Args );
   void CMD_Monitor        (const char *Args );
@@ -311,6 +317,7 @@ public:
   void CMD_DCCChat        (char *Args );
   void CMD_UnloadPlugin   (char *Args );
   void CMD_RefreshPlugins (const char *Args );
+  void CMD_ListPlugins    (const char *Args );
   void CMD_Ignore         (const char *Args );
   void CMD_Clear          (const char *Args );
   void CMD_SaveTheme      (char *Args );

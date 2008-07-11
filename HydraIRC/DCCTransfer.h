@@ -55,7 +55,7 @@ public:
   HANDLE m_hFile;
   int m_Type; // either DCC_SEND or DCC_RECEIVE
   int m_Status;
-  int m_PacketSize;
+  unsigned int m_PacketSize;
   char m_StatusStr[DCCT_STATUS_MAX];
   int m_CheckTicks;  // reset to 0 each time we receive data.
   // incremented by one each time Check() is called
@@ -67,12 +67,12 @@ public:
 
 
   // Size Information
-  long m_Received;
-  long m_Sent;
-  long m_Position; // the current position of the transfer.
-  long m_FilePosition; // when sending, the current position of the file
-  long m_RemotePosition; // the current position of the file that the remote has acknowledged
-  long m_ResumeOffset; // if resuming, this is where we resumed from.
+  unsigned long m_Received;
+  unsigned long m_Sent;
+  unsigned long m_Position; // the current position of the transfer.
+  unsigned long m_FilePosition; // when sending, the current position of the file
+  unsigned long m_RemotePosition; // the current position of the file that the remote has acknowledged
+  unsigned long m_ResumeOffset; // if resuming, this is where we resumed from.
 
   // times
   time_t m_ResumeTime; // is set when the file is resumed.
@@ -80,15 +80,15 @@ public:
 
   // Remote user info
   char *m_OtherNick; // who it's from, or who it's to
-  int m_Address;
+  unsigned long m_Address;
   int m_Port;
-  long m_Size;
+  unsigned long m_Size;
 
   // Filenames
   char *m_FileName; // name of the file that is sent by/to the remote user
   char *m_LocalFileName; // the absolute name of the local file
 
-  CDCCTransfer(IRCServer *pServer, char *OtherNick, char *FileName, int Address, int Port, int Size,int Flags);
+  CDCCTransfer(IRCServer *pServer, char *OtherNick, char *FileName, unsigned long Address, int Port, unsigned long Size,int Flags);
   ~CDCCTransfer( void );
 
   void WriteTransferSocket( void );

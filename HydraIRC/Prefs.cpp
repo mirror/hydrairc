@@ -614,7 +614,7 @@ char *g_PrefsStringIDNames[PREFSTRINGID_LAST] =
   "Channel Log Format",
   "Query Log Format",
   "DCCChat Log Format",
-  "Router Address",
+  "External Address",
   "Default Theme",
   "Nick Completion Suffix",
   "Log File Viewer",
@@ -1902,10 +1902,13 @@ void Prefs::XML_LoadCommandProfiles(xmlNodePtr pNode)
 
       if (commands)
       {
-        char UnescapedString[512];
-        UnescapeString(UnescapedString,sizeof(UnescapedString),commands);
-        free(commands);
-        commands = strdup(UnescapedString);
+	    int bufferSize = strlen(commands) * 2 + 1;
+        char *UnescapedString = (char *)malloc(bufferSize);
+		if (UnescapedString) {
+			UnescapeString(UnescapedString,bufferSize,commands);
+		}
+		free(commands);
+		commands = UnescapedString;
       }
 
       if (name && commands)
@@ -2323,6 +2326,7 @@ void Prefs::XML_LoadNetworkList(xmlNodePtr pNode, int DefaultFlags)
           if (GetNetworkDetails(pNetworkDetails->m_ID) != NULL)
           {
             sys_Printf(BIC_WARNING,"Network, Name = \"%s\" already present in HydraIRC.xml, ignoring!\n",pNetworkDetails->m_Name);
+            delete pNetworkDetails;
           }
           else
           {
@@ -4179,9 +4183,10 @@ void Prefs::Copy(Prefs *pOther)
       continue;
 
     CopyMemory(pNewNPI,pOther->m_NotificationPrefList[i],sizeof(NotificationPrefInfo_t));
-    //we could do this, but it's slower...
+    //we could do this, but it's slower, m_FileName's alread pointing a the right string to be copied..
     //pNewNPI->m_FileName = strdup(pOther->m_NotificationPrefList[i]->m_FileName);
     pNewNPI->m_FileName = strdup(pNewNPI->m_FileName);
+    pNewNPI->m_MatchString = strdup(pNewNPI->m_MatchString);
     m_NotificationPrefList.Add(pNewNPI);
   }
 
@@ -4260,6 +4265,7 @@ Prefs::~Prefs(void)
   {
     pNPI = m_NotificationPrefList[0];
     if (pNPI->m_FileName) free(pNPI->m_FileName);
+    if (pNPI->m_MatchString) free(pNPI->m_MatchString);
     free(pNPI);
     m_NotificationPrefList.RemoveAt(0);
   }

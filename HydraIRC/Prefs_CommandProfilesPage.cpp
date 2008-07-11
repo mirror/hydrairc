@@ -259,10 +259,19 @@ LRESULT CCommandProfilesPage::OnBnClickedRename(WORD /*wNotifyCode*/, WORD /*wID
   if (!CopyWindowText(&m_ProfileNameCtrl,Name))
     return 0; // we need a name for it!
 
+
+  // check new name is not the same as the old name
+  if (stricmp(pCommandProfile->m_Name, Name) == 0) {
+    MessageBox(_T("Name not changed - change the name then click 'Rename'"),_T("Error"), MB_ICONEXCLAMATION);
+    free(Name);
+    return 0;
+  }
+
   // can't rename to the same name as one that already exists
   if (g_pNewPrefs->FindCommandProfile(Name))
   {
     free(Name);
+    MessageBox(_T("A command profile with that new already exists"),_T("Error"), MB_ICONEXCLAMATION);  
     return 0;
   }
 

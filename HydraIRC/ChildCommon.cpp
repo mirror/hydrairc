@@ -71,6 +71,7 @@ void CChildCommon::HideWindow( void )
 
 #ifdef USE_TABBEDMDI
     //SetTabText("HIDDEN");
+	// TODO: FIX THIS
     ::SendMessage(GetParent(), UWM_MDICHILDHIDDEN, (WPARAM)m_hWnd, 0);
 #endif
   }

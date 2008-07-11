@@ -80,8 +80,7 @@ void Uptime(int ServerID,int ChannelID)
 {
   time_t now = time(NULL); 
 
-  DWORD	d, h;
-  double m,s;
+  DWORD	d, h, m, s;
 
   BOOL GotUptime = FALSE;
   
@@ -106,8 +105,8 @@ void Uptime(int ServerID,int ChannelID)
           {
 	          d = (DWORD) (uptimeValue.largeValue / (3600*24));
 	          h = (DWORD) (uptimeValue.largeValue % (3600*24) / 3600);
-	          m = (double) (uptimeValue.largeValue % 3600) / 60;
-	          s = (double) (uptimeValue.largeValue % 60);            
+	          m = (DWORD) (uptimeValue.largeValue % 3600) / 60;
+	          s = (DWORD) (uptimeValue.largeValue % 60);            
             GotUptime = TRUE;
           }
         }
@@ -124,8 +123,8 @@ void Uptime(int ServerID,int ChannelID)
     uptime = uptime / 1000; // convert from milliseconds to seconds.
 	  d = (DWORD) (uptime / (3600*24));
 	  h = (DWORD) (uptime % (3600*24) / 3600);
-	  m = (double) (uptime % 3600) / 60;
-	  s = (double) (uptime % 60);
+	  m = (DWORD) (uptime % 3600) / 60;
+	  s = (DWORD) (uptime % 60);
     GotUptime = TRUE;
   }
 
@@ -136,19 +135,19 @@ void Uptime(int ServerID,int ChannelID)
   i = _snprintf(timestr,1023,"\0037[\0032System-Uptime\0037]\0033 ");
   if (d > 0) i += _snprintf(timestr+i,1023-i,"%i\017d\0033 ", d); 
   if (h > 0)	i += _snprintf(timestr+i,1023-i,"%i\017h\0033 ", h); 
-  i += _snprintf(timestr+i,1023-i,"%02.0f\017m\0033 %02.0f\017s", m, s);
+  i += _snprintf(timestr+i,1023-i,"%i\017m\0033 %i\017s", m, s);
 
   time_t hydraircuptime = now - PluginStartTime;
 
 	d = (DWORD) (hydraircuptime / (3600*24));
 	h = (DWORD) (hydraircuptime % (3600*24) / 3600);
-	m = (double) (hydraircuptime % 3600) / 60;
-	s = (double) (hydraircuptime % 60);
+	m = (DWORD) (hydraircuptime % 3600) / 60;
+	s = (DWORD) (hydraircuptime % 60);
 
   i += _snprintf(timestr+i,1023," \0037[\0032HydraIRC-Uptime\0037]\0033 ");
   if (d > 0) i += _snprintf(timestr+i,1023-i,"%i\017d\0033 ", d); 
   if (h > 0)	i += _snprintf(timestr+i,1023-i,"%i\017h\0033 ", h); 
-  i += _snprintf(timestr+i,1023-i,"%02.0f\017m\0033 %02.0f\017s", m, s);
+  i += _snprintf(timestr+i,1023-i,"%i\017m\0033 %i\017s", m, s);
 
   // Post it to the debug window
   // sys_Printf(BIC_INFO,"%s\n",timestr);

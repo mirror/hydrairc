@@ -106,6 +106,8 @@
 #define IDR_MENU3                       316
 #define IDR_DCCCHAT_CONTEXT             316
 #define IDD_CHANNELLIST                 319
+#define IDD_PREFS_NOTIMPLEMENTED1       320
+#define IDD_PREFS_SELECTCHILD           320
 #define ID_EBG_OK                       1000
 #define ID_EN_OK                        1001
 #define ID_ESRV_OK                      1002
@@ -275,7 +277,6 @@
 #define IDC_CHILDFRAME_VERBOSELEVEL_LEVEL1 1157
 #define IDC_CHILDFRAME_VERBOSELEVEL_LEVEL2 1158
 #define IDC_CHILDFRAME_VERBOSELEVEL_LEVEL3 1159
-
 #define IDR_USERLIST_CONTEXT            4000
 #define ID_CONTEXT_CLIPBOARD            4001
 #define ID_USERLISTFIRST                4002
@@ -294,7 +295,16 @@
 #define ID_USERLIST_BAN                 4014
 #define ID_USERLIST_KICKANDBAN          4015
 #define ID_USERLIST_SHOWBUDDYGROUPS     4016
-#define ID_USERLISTLAST                 4016
+#define ID_USERLIST_CTCP_VERSION        4017
+#define ID_USERLIST_CTCP_CLIENT         4018
+#define ID_USERLIST_CTCP_USER           4019
+#define ID_USERLIST_CTCP_PING           4020
+#define ID_USERLIST_CTCP_TIME           4021
+#define ID_USERLIST_ADMIN               4022
+#define ID_USERLIST_DEADMIN             4023
+#define ID_USERLIST_HALFOP              4024
+#define ID_USERLIST_DEHALFOP            4025
+#define ID_USERLISTLAST                 4025
 #define ID_HELP_DOCUMENTATION           32786
 #define ID_HELP_REPORTABUG              32787
 #define ID_HELP_FORUMS                  32788
@@ -330,14 +340,34 @@
 #define ID_CONNECT_NC_DELETE            32858
 #define ID_CONNECT_NC_ADDSERVER         32860
 #define ID_CHANNEL_CHANNELLIST          32861
-
+#define ID_CONTEXT_CTCP                 32865
+#define ID_CTCP_VERSION                 32866
+#define ID_CTCP_CLIENT                  32867
+#define ID_CTCP_USERINFO                32868
+#define ID_CTCP_PING                    32869
+#define ID_CONTEXT_SLAP                 32870
+#define ID_Menu32871                    32871
+#define ID_CTCP_TIME                    32872
+#define ID_USERLIST_CONTEXT_SLAP        32873
+#define ID_VIEW_CHANNELLIST             32874
+#define ID_FAVORITES_ADDTOFAVORITES32876 32876
+#define ID_FAVORITES_ORGANIZEFAVORITES32877 32877
+#define ID_CHANNEL_MONITOR32878         32878
+#define ID_CHANNEL_SHOWSERVER32879      32879
+#define ID_CHANNEL_PROPERTIES32880      32880
+#define ID_CHANNEL_CHANNELLIST32881     32881
+#define ID_CONTEXT_QUERY                32882
+#define ID_OPERATOR_ADMIN               32883
+#define ID_OPERATOR_DEADMIN             32884
+#define ID_OPERATOR_HALFOP              32885
+#define ID_OPERATOR_DEHALFOP            32886
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        321
-#define _APS_NEXT_COMMAND_VALUE         32865
+#define _APS_NEXT_COMMAND_VALUE         32891
 #define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           100
 #endif

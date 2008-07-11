@@ -442,12 +442,20 @@ char *EscapePercentCharacters(char *dest,const char *source,int destbuffersize)
   if (!dest)
     return NULL;
 
-  while (source && *source && destbuffersize--)
+  while (--destbuffersize > 1 && source && *source)
   {
-    if (*source == '%')
+    if (*source == '%' && destbuffersize)
+	{
       *dest++ = '%'; // add another %
+	  destbuffersize--;
+	  *dest++ = *source++;
+	}
+	else
+	{
+	  *dest++ = *source++;
+	}
 
-    *dest++ = *source++;
+    
   }
   *dest = 0;
   return dest;

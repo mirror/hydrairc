@@ -96,7 +96,7 @@ public:
 
   void SetDirtyStatus( int Status = DIRTY_TRUE ) { m_Dirty = Status; }
   void ClearDirtyFlag( void )  { m_Dirty = DIRTY_FALSE; }
-  BOOL GetDirtyTime( void ) { return m_DirtyTime; }
+  time_t GetDirtyTime( void ) { return m_DirtyTime; }
   
   void SetDirtyFilterList( int *FilterList ) { m_DirtyFilterList = FilterList; }  
   BOOL SetTheme(char *ThemeName);

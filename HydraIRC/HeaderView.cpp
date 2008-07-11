@@ -88,7 +88,7 @@ LRESULT CHeaderView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
   const DWORD dwButtonStyle = BS_FLAT | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
   rc.left = rc.right - 20;
-  m_ButtonCtrl.Create(m_hWnd,&rc,_T("..."),dwButtonStyle,0);
+  m_ButtonCtrl.Create(m_hWnd,&rc,_T("  X  "),dwButtonStyle,0);
   m_ButtonCtrl.SetFont ( AtlGetStockFont ( DEFAULT_GUI_FONT ) );
 
   UpdateSettings();

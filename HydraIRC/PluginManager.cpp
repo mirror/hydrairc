@@ -116,7 +116,15 @@ BOOL HydraIRC_NewServer(char *URI)
 
 HWND HydraIRC_GetToolbar( void )
 {
-  return g_pMainWnd->m_hWndToolBar;
+  CReBarCtrl g_Rebar;
+  g_Rebar.Attach(g_pMainWnd->m_hWndToolBar);
+  REBARBANDINFO rbbi = { sizeof(REBARBANDINFO), RBBIM_CHILD };
+  if (g_Rebar.GetBandInfo(1,&rbbi) != 0) {
+    //sys_Printf(BIC_INFO, "Got Band Info");
+    return rbbi.hwndChild;
+  }
+
+  return NULL;//g_pMainWnd->m_hWndToolBar;
 }
 
 HIMAGELIST HydraIRC_GetToolbarImageList( void )
@@ -576,6 +584,21 @@ void CPluginManager::LoadPlugin( const char *FileName )
   }
 
   FreeLibrary(pDLL);
+}
+
+void CPluginManager::ListPlugins( void ) {
+  HydraIRCPlugin *pPlugin;
+  for (pPlugin = (HydraIRCPlugin *)m_Plugins.GetFirst(); 
+       pPlugin->m_Next != NULL ; 
+       pPlugin = (HydraIRCPlugin *)pPlugin->m_Next)
+  {
+    sys_Printf(BIC_INFO,"Plugin: %s (%s, %s) - %s\n",
+      pPlugin->m_Name,
+      pPlugin->m_Author,
+      pPlugin->m_Info,
+      pPlugin->m_Active ? "ACTIVE" : "INACTIVE"
+    );
+  }
 }
 
 void CPluginManager::RefreshPlugins( void )

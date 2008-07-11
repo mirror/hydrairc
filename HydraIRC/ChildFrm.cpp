@@ -461,7 +461,7 @@ void CChildFrame::CMD_CTCPRequest(char *Args)
     if (to && *to && msg && *msg)
     {
       char percentescapedbuf[512*2 + 1];
-      EscapePercentCharacters(percentescapedbuf,msg,sizeof(percentescapedbuf)-1);
+      EscapePercentCharacters(percentescapedbuf,msg,sizeof(percentescapedbuf));
 
       BOOL Sent = m_pServer->CMD_CTCPRequest(to,percentescapedbuf);
       // if a ctcp request was sent, echo it in the window channel/query
@@ -969,6 +969,11 @@ void CChildFrame::CMD_Set(char *Args)
 void CChildFrame::CMD_RefreshPlugins(const char *Args)
 {
   g_pPluginManager->RefreshPlugins();
+}
+
+void CChildFrame::CMD_ListPlugins(const char *Args)
+{
+  g_pPluginManager->ListPlugins();
 }
 
 void CChildFrame::CMD_UnloadPlugin(char *Args)
@@ -1612,6 +1617,88 @@ void CChildFrame::CMD_Raw( char *Args )
   m_pServer->CMD_Raw(Args);
 }
 
+CTimerCommand *CChildFrame::GetTimerCommand(char *CommandProfileName)
+{
+  for (int i=0; i < m_TimerCommands.GetSize(); i++) 
+  {
+    CTimerCommand *pTimerCommand = (CTimerCommand *)m_TimerCommands[i];
+    if (stricmp(pTimerCommand->m_CommandProfileName,CommandProfileName) == 0)
+    {
+      return pTimerCommand;
+    }
+  }
+  return NULL;
+}
+
+void CChildFrame::AddTimerCommand(int Delay, char *CommandProfileName)
+{
+  CCommandProfile *pCommandProfile = g_pPrefs->FindCommandProfile(CommandProfileName);
+
+  if (!pCommandProfile)
+  {
+    Printf(BIC_ERROR,"ERROR: Could not find a profile with that name");
+    return;
+  }
+
+
+  CTimerCommand *pTimerCommand = GetTimerCommand(CommandProfileName);
+  if (pTimerCommand) {
+    Printf(BIC_ERROR, "A timer named '%s' has already been started for this window", CommandProfileName);
+    return;
+  }
+
+  Printf(BIC_INFO, "Starting timer, using command profile %s every %d seconds", CommandProfileName, Delay);
+
+  pTimerCommand = new CTimerCommand(Delay, CommandProfileName, this);
+  m_TimerCommands.Add(pTimerCommand);
+
+  g_EventManager.QueueTimedEvent((CListener *)this,FALSE,EV_CW_TIMER,Delay,TRUE,FALSE,pTimerCommand);
+}
+
+void CChildFrame::CMD_Timer( char *Args )
+{
+  int Delay;
+  char *DelayString = strtok(Args," ");
+  char *CommandProfileName = strtok(NULL,"");
+
+  if (!DelayString || !CommandProfileName || !Args || !*Args || sscanf(DelayString, "%d", &Delay) != 1 )
+  {
+    Printf(BIC_ERROR,"ERROR: [Delay] [CommandProfileName]");
+    return;
+  }
+
+  AddTimerCommand(Delay, CommandProfileName);  
+}
+
+void CChildFrame::CMD_StopTimer( char *Args )
+{
+  if (!Args || !*Args)
+  {
+    Printf(BIC_ERROR,"ERROR: [CommandProfileName]");
+    return;
+  }
+
+  CTimerCommand *pTimerCommand = GetTimerCommand(Args);
+  if (!pTimerCommand)
+  {
+    Printf(BIC_ERROR,"ERROR: A timer with the name of %s has not been started", Args);
+    return;
+  }
+
+  m_TimerCommands.Remove(pTimerCommand);
+  BOOL Deleted = g_EventManager.DeleteEvents(this, EV_CW_TIMER, pTimerCommand);
+
+  if (Deleted) 
+  {
+    Printf(BIC_INFO,"A timer with the name of %s was stopped!", Args);
+  }
+  else
+  {
+    Printf(BIC_ERROR,"ERROR: A timer with the name of %s could not be stopped!", Args);
+  }
+
+}
+
 void CChildFrame::CMD_Exec( char *Args )
 {
   if (!Args || !*Args)
@@ -1928,6 +2015,10 @@ BOOL CChildFrame::ProcessCommand(char *Command, char *Args)
   {
     CMD_RefreshPlugins(Args);
   }
+  else if (stricmp(Command,"LISTPLUGINS") == 0)
+  {
+    CMD_ListPlugins(Args);
+  }
   else if (stricmp(Command,"AUDIOMUTE") == 0)
   {
     CMD_AudioMute(Args);
@@ -1955,6 +2046,14 @@ BOOL CChildFrame::ProcessCommand(char *Command, char *Args)
   else if (stricmp(Command,"EXEC") == 0)
   {
     CMD_Exec(Args);
+  }
+  else if (stricmp(Command,"TIMER") == 0)
+  {
+    CMD_Timer(Args);
+  }
+  else if (stricmp(Command,"STOPTIMER") == 0)
+  {
+    CMD_StopTimer(Args);
   }
   else if (stricmp(Command,"QUERY") == 0)
   {
@@ -3064,6 +3163,15 @@ CChildFrame::~CChildFrame()
   sys_Printf(BIC_FUNCTION,"Deleting Class Instance: CChildFrame\n");
   ATLASSERT(!IsWindow()); // window still exists
 #endif
+  
+  while (m_TimerCommands.GetSize() > 0)
+  {
+    CTimerCommand *pTimerCommand = m_TimerCommands[0];
+    g_EventManager.DeleteEvents(this, EV_CW_TIMER);
+    m_TimerCommands.RemoveAt(0);
+    delete pTimerCommand;
+  }
+
   g_ChildWndList.Remove(this);
   if (m_StatusStr) free(m_StatusStr);
 }
@@ -3072,6 +3180,12 @@ void CChildFrame::OnEvent(int EventID, void *pData)
 {
   switch (EventID)
   {
+    case EV_CW_TIMER:
+      {
+        CTimerCommand *pTimerCommand = (CTimerCommand *)pData;
+        CMD_Exec(pTimerCommand->m_CommandProfileName);
+      }
+      break;
     case EV_TICK:
       {
         m_InfoUpdateTicks++;
@@ -3207,6 +3321,37 @@ LRESULT CChildFrame::OnUserListContext(WORD wNotifyCode, WORD wID, HWND hWndCtl,
       case ID_USERLIST_KICK:
         Command = HydraIRC_BuildString(512,"/kick %s",pUser->m_Nick);
         break;
+	  case ID_USERLIST_CTCP_VERSION:
+		Command = HydraIRC_BuildString(512,"/ctcp %s version",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_CTCP_USER:
+		Command = HydraIRC_BuildString(512,"/ctcp %s userinfo",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_CTCP_CLIENT:
+		Command = HydraIRC_BuildString(512,"/ctcp %s clientinfo",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_CTCP_PING:
+		Command = HydraIRC_BuildString(512,"/ctcp %s ping",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_CTCP_TIME:
+		Command = HydraIRC_BuildString(512,"/ctcp %s time",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_ADMIN:
+		Command = HydraIRC_BuildString(512,"/mode +a %s",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_DEADMIN:
+		Command = HydraIRC_BuildString(512,"/mode -a %s",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_HALFOP:
+		Command = HydraIRC_BuildString(512,"/mode +h %s",pUser->m_Nick);
+		break;
+	  case ID_USERLIST_DEHALFOP:
+		Command = HydraIRC_BuildString(512,"/mode -h %s",pUser->m_Nick);
+		break;
+
+
+
+
       case ID_USERLIST_KICKANDBAN:
       case ID_USERLIST_BAN:
         // we need a valid hostmask before we can ban the user.

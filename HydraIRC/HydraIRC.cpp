@@ -239,6 +239,7 @@ OutputThemeItem_t g_OutputTheme1[] = {
   {THEME_SERVER,RPL_LISTSTART,"Channel Name - Users - Topic"},
   {THEME_SERVER,RPL_LIST,"<CHANNEL> - Users: <PARAM2> Topic: <ALL>"},
   {THEME_SERVER,RPL_LISTEND,"<ALL>"},
+  {THEME_SERVER,RPL_LINKS,"<PARAM1> <PARAM2> Hops: <PARAM3> Info: <PARAM4>"},
   {THEME_CHANNEL | THEME_SERVER,RPL_CHANNELMODEIS,"*** channel <CHANNEL> mode is <CHANNELMODE>"},
   {THEME_SERVER,ERR_UNAVAILRESOURCE,"<CHANNEL> - <ALL>"},
   {THEME_SERVER,ERR_TOOMANYCHANNELS,"<CHANNEL> - <ALL>"},
@@ -302,6 +303,7 @@ OutputThemeItem_t g_OutputTheme2[] = {
   {THEME_SERVER,RPL_LISTSTART,"0,2 LIST  Channel Name - Users - Topic"},
   {THEME_SERVER,RPL_LIST,"0,2 LIST  <CHANNEL> - Users: <PARAM2> Topic: <ALL>"},
   {THEME_SERVER,RPL_LISTEND,"0,2 LIST  <ALL>"},
+  {THEME_SERVER,RPL_LINKS,"0,2 LINKS  <PARAM1> <PARAM2> Hops: <PARAM3> Info: <PARAM4>"},
   {THEME_CHANNEL | THEME_SERVER,RPL_CHANNELMODEIS,"0,3 MODE  <CHANNEL> mode is <CHANNELMODE>"},
   {THEME_SERVER,ERR_UNAVAILRESOURCE,"0,4 <CHANNEL>  <ALL>"},
   {THEME_SERVER,ERR_TOOMANYCHANNELS,"0,7 <CHANNEL>  <ALL>"},
@@ -2075,7 +2077,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
   _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 
   // Enable this to break when the nth block of memory is allocated
-	//_CrtSetBreakAlloc(2776);
+	//_CrtSetBreakAlloc(23456);
 #endif
 
   srand( (unsigned)time( NULL ) );

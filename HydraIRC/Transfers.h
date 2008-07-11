@@ -54,7 +54,7 @@ public:
   void UpdateStatus(CDCCTransfer *pDCCTransfer);
   void CheckAndUpdateAll( void );
   int GetActiveTransferCount( int Type ); // see DCC_* defines for Type
-  void ReceiveFile(IRCServer *pServer,char *From, char *FileName, int Address, int Port, long Size);
+  void ReceiveFile(IRCServer *pServer,char *From, char *FileName, unsigned long Address, int Port, unsigned long Size);
   void Resume(IRCServer *pServer,char *From, int Port, long Offset);
   void QueueFileSend(IRCServer *pServer,char *To, char *FileName, int QueueFlags = 0 );
   LRESULT OnTransferEvent(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

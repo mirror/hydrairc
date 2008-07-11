@@ -112,6 +112,11 @@ char *AliasList[] =
   "op=mode $# +ooo $1 $2 $3",
   "dop=mode $# -ooo $1 $2 $3",
   "voice=mode $# +vvv $1 $2 $3",
+  "hop=mode $# +hhh $1 $2 $3",
+  "devoice=mode $# -vvv $1 $2 $3",
+  "dehop=mode $# -hhh $1 $2 $3",
+  "deadmin=mode $# -aaa $1 $2 $3",
+  "admin=mode $# +aaa $1 $2 $3",
   "j=join $1-",
   "qj=quietjoin $1-",
   "q=query $1-",
@@ -135,13 +140,22 @@ char *AliasList[] =
   "umode=mode $! $1-",
   "action=me $1-",
   "onotice=NOTICE @$# $1-",
+  "omsg=PRIVMSG @$# :$1-",
+  "kill=KILL $1 :$2-",
+  "zline=ZLINE $1 :$2-",
+  "kline=KLINE $1 :$2-",
+  "gline=GLINE $1 :$2-",
+  "shun=SHUN $1 :$2-",
+  "gzline=GZLINE $1 :$2-",
+  "tkline=TKLINE $1 :$2-",
+  "tzline=TZLINE $1 :$2-",
   NULL
 };
 
 char *GetAliasCommand(char *Command)
 {
   char **pAlias = AliasList;
-  int CommandLen = strlen(Command);
+  int CommandLen = (int) strlen(Command);
   while (*pAlias)
   {
     char *Pos = strchr(*pAlias,'=');
