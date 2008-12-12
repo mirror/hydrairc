@@ -768,7 +768,7 @@ BOOL IRCServer::ParseURIParams( char *URIParams)
   
   BOOL Parsed = FALSE;
 
-  char data[512];
+  char *data = (char *)malloc(strlen(URIParams)+1);
   char *commandstr = NULL;
   *data = 0;
   int i = 0,j = 0;
@@ -803,6 +803,7 @@ BOOL IRCServer::ParseURIParams( char *URIParams)
       Parsed = TRUE;
     }
   }
+  free(data);
   return Parsed;
 }
 

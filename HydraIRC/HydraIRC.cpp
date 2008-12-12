@@ -2137,7 +2137,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
   sprintf(g_ConsoleLogFile,"%s\\HydraIRC_Log.txt",g_HomeDir);
 
-#ifndef DEBUG
+//#ifndef DEBUG
 	SingleInstance hydraircapp("HYDRAIRC-{27F36160-BB35-4a38-8BF0-FED47B0565A0}");
 
 	if(hydraircapp.IsAnotherInstanceRunning())
@@ -2160,7 +2160,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
-#endif
+//#endif
 
   sys_Log(BIC_INFO,"*** HydraIRC " VERSIONSTRING " Started ***");
   sys_Logf(BIC_INFO,"Richedit Version %s",pDLL->GetFullVersion());
