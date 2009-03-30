@@ -80,20 +80,11 @@ return TRUE;
 
 char *g_SlapMessages[] = 
 {
-  "gives %s a clout round the head with a fresh copy of \002HydraIRC\002",
   "slaps %s with a large smelly trout",
   "slaps %s upside da head with a hairy goldfish",
-  "breaks out the slapping rod and looks sternly at %s",
-  "slaps %s's bottom and grins cheekily",
   "slaps %s a few times",
-  "slaps %s and starts getting carried away",
-  "would slap %s, but is not being violent today",
-  "gives %s a hearty slap",
   "finds the closest large object and gives %s a slap with it",
-  "instructs a pet piranha to munch on %s's shoulder blades",
-  "likes slapping people and randomly picks %s to slap.",
-  "pops down the farm, grabs a Shetland Pony and slaps %s with it!",
-  "dusts off a kitchen towel and slaps it at %s"
+  "instructs a pet piranha to munch on %s's shoulder blades"
 };
 
 
