@@ -553,7 +553,7 @@ void CDCCTransfer::Connect( void )
       else
       {
         // tell the remote user to accept the file!
-        m_pServer->CMD_CTCPRequest(m_OtherNick, "DCC SEND %s %lu %d %lu",          
+        m_pServer->CMD_CTCPRequest(m_OtherNick, "DCC SEND %s %ll %d %lu",          
           m_FileName, 
           htonl(GetInternetIP()), 
           m_Port, 
