@@ -99,6 +99,8 @@ public:
 
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
+		if (IsIconic()) return;
+
 		CRect rc;
 		GetClientRect(&rc);
 		UpdateBarsPosition(rc, bResizeBars);

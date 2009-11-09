@@ -50,6 +50,7 @@ BOOL CEditNotificationDlg::Validate( void )
   {
     m_pNPI->m_Flags = 0;
     if (m_FlashTaskBarCtrl.GetCheck()) m_pNPI->m_Flags |= NE_FLAG_FLASHTASKBAR;
+    if (m_NotificationCtrl.GetCheck()) m_pNPI->m_Flags |= NE_FLAG_NOTIFICATION;
     if (m_LogInEventLogCtrl.GetCheck()) m_pNPI->m_Flags |= NE_FLAG_LOGINEVENTLOG;
     if (!m_EnabledCtrl.GetCheck()) m_pNPI->m_Flags |= NE_FLAG_DISABLED;
     if (m_HasSoundCtrl.GetCheck())
@@ -188,6 +189,7 @@ LRESULT CEditNotificationDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
   m_BrowseCtrl.Attach(GetDlgItem(IDC_EN_BROWSE));
   m_EnabledCtrl.Attach(GetDlgItem(IDC_EN_ENABLED));
   m_FlashTaskBarCtrl.Attach(GetDlgItem(IDC_EN_FLASHTASKBAR));
+  m_NotificationCtrl.Attach(GetDlgItem(IDC_EN_NOTIFICATION));
   m_SystemSoundCtrl.Attach(GetDlgItem(IDC_EN_SYSTEMSOUND));
   m_SoundFileCtrl.Attach(GetDlgItem(IDC_EN_SOUNDFILE));
   m_HighlightWholeLineCtrl.Attach(GetDlgItem(IDC_EN_HIGHLIGHTWHOLELINE));
@@ -200,6 +202,7 @@ LRESULT CEditNotificationDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
   m_EnabledCtrl.SetCheck((m_pNPI->m_Flags & NE_FLAG_DISABLED) == 0);
   m_FlashTaskBarCtrl.SetCheck((m_pNPI->m_Flags & NE_FLAG_FLASHTASKBAR) > 0);
+  m_NotificationCtrl.SetCheck((m_pNPI->m_Flags & NE_FLAG_NOTIFICATION) > 0);
   m_LogInEventLogCtrl.SetCheck((m_pNPI->m_Flags & NE_FLAG_LOGINEVENTLOG) > 0);
   m_SystemSoundCtrl.SetCheck((m_pNPI->m_Flags & NE_FLAG_SYSTEMSOUND) > 0);
   m_SoundFileCtrl.SetCheck((m_pNPI->m_Flags & NE_FLAG_SOUNDFILE) > 0);

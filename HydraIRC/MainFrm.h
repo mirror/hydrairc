@@ -62,6 +62,7 @@ public:
 #endif
 
 #endif // !USE_XPCOMMANDBAR
+  CTaskBarIcon m_TI;
 
 private:
   int m_StatusBarWidths[4];
@@ -77,8 +78,10 @@ private:
   IDManager m_FavoriteIDs;
   int m_FavoriteRootItems;
 
+  void Minimize( void );
+  void HideMainWindow( void );
+  void CreateSystrayIcon( void );
   void MinimizeToSystray( void );
-  CTaskBarIcon m_TI;
   BOOL m_WasMaximized; // store the state of the window before hiding it
 
   // used to decide where to send the USERLIST context menu command messages

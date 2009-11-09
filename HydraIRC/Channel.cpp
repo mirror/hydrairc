@@ -776,8 +776,9 @@ void IRCChannel::OutputFormatter(int Contents,int IRCCommandID)
 
   // Catch URLs (URLGrabber)
   char *Url; // only one part, don't define as an array - pass address to RegExpToArray() call (see below)
-  int PartsCount;
-  PartsCount = RegExpToArray(FormatBuffer,"^(.* )?{http([^ ])+}(.*)$",&Url,false);
+  int PartsCount = -1;
+  //TODO: Fix crash
+  //PartsCount = RegExpToArray(FormatBuffer,"^(.* )?{http([^ ])+}(.*)$",&Url,false);
   if (PartsCount == 1 && Url)
   {
     g_pUrlCatcherManager->AddItem(m_pServer->m_Variables[VID_UNPREFIXEDNICK], Url, this->m_pServer);
@@ -922,9 +923,6 @@ void IRCChannel::OutputFormatter(int Contents,int IRCCommandID)
               strncat(FormatBuffer,NewBuffer,(FORMAT_BUFFER_SIZE-1) - strlen(FormatBuffer));
               free(NewBuffer);
             }
-            free(parts[0]);
-            free(parts[1]);
-            free(parts[2]);
             Done = TRUE; // don't need to recursively highlight stuff when highlight whole line..
           }
           else
@@ -936,8 +934,6 @@ void IRCChannel::OutputFormatter(int Contents,int IRCCommandID)
               strncat(FormatBuffer,NewBuffer,(FORMAT_BUFFER_SIZE-1) - strlen(FormatBuffer));
               free(NewBuffer);
             }
-            free(parts[0]);
-            free(parts[1]);
             free(MatchString);
             MatchString = parts[2]; // check the rest of the string too!
 
@@ -961,13 +957,24 @@ void IRCChannel::OutputFormatter(int Contents,int IRCCommandID)
 
       if (Matched)
       {
-        g_pNotificationManager->DoNotification(pNPI);
+        g_pNotificationManager->DoNotification(pNPI, HydraIRC_BuildString(FORMAT_BUFFER_SIZE-1, "%s %s", parts[0], m_pProperties->m_Name), parts[1]);
 
         if (pNPI->m_Flags & NE_FLAG_LOGINEVENTLOG)
         {
           // add to event log
           g_pEventLogManager->BuildMessage(g_DefaultStrings[DEFSTR_Channel_Highlight],m_pServer->m_Variables[VID_UNPREFIXEDNICK],m_pServer->m_Variables[VID_ALL],m_pProperties->m_Name);
           g_pEventLogManager->AddItem(ELIT_CHANNEL, ELID_Highlight,m_pServer->m_Variables[VID_UNPREFIXEDNICK], NULL, m_pServer, this);
+        }
+        if (pNPI->m_HighlightFlags & HIGHLIGHT_WHOLELINE)
+        {
+          free(parts[0]);
+          free(parts[1]);
+          free(parts[2]);
+        }
+        else
+        {
+          free(parts[0]);
+          free(parts[1]);
         }
       }
 

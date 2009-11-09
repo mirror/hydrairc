@@ -150,6 +150,7 @@
 #define IDC_EN_HIGHLIGHTWHOLELINE       1040
 #define IDC_EN_HIGHLIGHTCASESENSITIVE   1041
 #define IDC_FILTERS_ADD                 1042
+#define IDC_EN_NOTIFICATION             1042
 #define IDC_FILTERS_EXCLUDE             1043
 #define IDC_FILTERS_INCLUDE             1044
 #define IDC_FILTERS_OBJECT              1045

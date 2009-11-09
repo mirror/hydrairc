@@ -1024,6 +1024,7 @@ LRESULT CMainFrame::OnInitialize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     g_pNoticeQueueManager->m_pTextQueueView->ShowWindow(SW_HIDE);
     g_pUrlCatcherManager->m_pTextQueueView->ShowWindow(SW_SHOW);
   }
+  if(BOOLPREF(PREF_bAlwaysShowTrayIcon)) CreateSystrayIcon();
 
   // when these were created, we didn't have the prefs loaded
   // so we need to update them now so that the fonts and colors are set
@@ -1041,6 +1042,8 @@ LRESULT CMainFrame::OnInitialize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
   // Show the window!
 	UpdateLayout();
+
+	if(BOOLPREF(PREF_bStartMinimized)) Minimize();
 
   // create the timer, and set the EV_TICK event in motion.
   m_Timer = SetTimer(TID_MAINFRAME,1000,(TIMERPROC)NULL);
@@ -2378,6 +2381,7 @@ void CMainFrame::RestoreWindow( void )
 {
   if (m_TI.IsInstalled())
   {
+    if (!BOOLPREF(PREF_bAlwaysShowTrayIcon))
     m_TI.Uninstall();
 
     if (m_WasMaximized)
@@ -2434,6 +2438,19 @@ LRESULT CMainFrame::OnRequestAutoTile(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 
 void CMainFrame::MinimizeToSystray( void )
 {
+    CreateSystrayIcon();
+    HideMainWindow();
+}
+
+void CMainFrame::Minimize( void )
+{
+  m_WasMaximized = IsZoomed();
+  ShowWindow(SW_MINIMIZE);
+  if(BOOLPREF(PREF_bMinimizeToSysTray)) HideMainWindow();
+}
+
+void CMainFrame::HideMainWindow( void )
+{
   DWORD dwStyle = g_pMainWnd->m_ChannelMonitorView.GetWindowLong(GWL_EXSTYLE);
   dwStyle |= WS_EX_APPWINDOW | WS_EX_TOPMOST; // add the flags
   g_pMainWnd->m_ChannelMonitorView.SetWindowLong( GWL_EXSTYLE , dwStyle); // this ignores the WS_EX_TOPMOST style.
@@ -2441,7 +2458,10 @@ void CMainFrame::MinimizeToSystray( void )
 
   m_WasMaximized = IsZoomed();
   ShowWindow(SW_HIDE);
+}
 
+void CMainFrame::CreateSystrayIcon( void )
+{
   HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
   HMENU hMenu = ::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_TASKBAR));
   m_TI.Install(m_hWnd, 1, hIcon, hMenu, _T("HydraIRC " VERSIONSTRING));
