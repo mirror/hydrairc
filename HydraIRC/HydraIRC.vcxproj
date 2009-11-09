@@ -1,0 +1,434 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{935A6F55-1AF1-4AE0-BE27-C7D5D339A9A8}</ProjectGuid>
+    <RootNamespace>HydraIRC</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v100</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v100</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.40825.2</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)HydraIRC.tlb</TypeLibraryName>
+      <HeaderFileName>HydraIRC.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>HydraIRC_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>HydraIRC_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>include\HydraControls;include\asyncmessagepump;include\treelist;include\propertylist;include\taskbaricon;include\tabctrls;include\dlgcontainer;include\dockingwindows;libs\libxml2\include;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;LIBXML_STATIC;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ShowIncludes>false</ShowIncludes>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/VERBOSE:LIB %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>libxml2_a.lib;wsock32.lib;winmm.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>libs\libxml2\win32\dsp\libxml2;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
+      <MapExports>true</MapExports>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)HydraIRC.tlb</TypeLibraryName>
+      <HeaderFileName>HydraIRC.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>HydraIRC_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>HydraIRC_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>include\HydraControls;include\asyncmessagepump;include\propertylist;include\taskbaricon;include\tabctrls;include\dlgcontainer;include\dockingwindows;libs\libxml2\include;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32;_WINDOWS;STRICT;NDEBUG;LIBXML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>libxml2_a.lib;wsock32.lib;winmm.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>libs\libxml2\win32\dsp\libxml2;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
+      <MapExports>true</MapExports>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="AddNetworkDlg.cpp" />
+    <ClCompile Include="Channel.cpp" />
+    <ClCompile Include="ChannelListDlg.cpp" />
+    <ClCompile Include="ChannelMonitor.cpp" />
+    <ClCompile Include="ChannelPropertiesDlg.cpp" />
+    <ClCompile Include="ChildCommon.cpp" />
+    <ClCompile Include="ChildFrm.cpp" />
+    <ClCompile Include="CLogger.cpp" />
+    <ClCompile Include="Colors.cpp" />
+    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="ConnectDlg.cpp" />
+    <ClCompile Include="DCCTransfer.cpp" />
+    <ClCompile Include="DNSResolver.cpp" />
+    <ClCompile Include="EditBuddyGroupDlg.cpp" />
+    <ClCompile Include="EditNotificationDlg.cpp" />
+    <ClCompile Include="EditServerDetailsDlg.cpp" />
+    <ClCompile Include="EventLog.cpp" />
+    <ClCompile Include="EventLogFrm.cpp" />
+    <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="FavoritesDlg.cpp" />
+    <ClCompile Include="GUIHelpers.cpp" />
+    <ClCompile Include="HeaderView.cpp" />
+    <ClCompile Include="HidingMDIWindow.cpp" />
+    <ClCompile Include="HydraIRC.cpp" />
+    <ClCompile Include="Identd.cpp" />
+    <ClCompile Include="InfoView.cpp" />
+    <ClCompile Include="Listener.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MsgView.cpp" />
+    <ClCompile Include="Notification.cpp" />
+    <ClCompile Include="Output.cpp" />
+    <ClCompile Include="PluginManager.cpp" />
+    <ClCompile Include="Prefs.cpp" />
+    <ClCompile Include="Prefs_BuddyGroupsPage.cpp" />
+    <ClCompile Include="Prefs_CommandProfilesPage.cpp" />
+    <ClCompile Include="Prefs_FiltersPage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Prefs_HighlightingPage.cpp" />
+    <ClCompile Include="Prefs_IdentitiesPage.cpp" />
+    <ClCompile Include="Prefs_LoggingPage.cpp" />
+    <ClCompile Include="Prefs_MessagesPage.cpp" />
+    <ClCompile Include="Prefs_MiscPage.cpp" />
+    <ClCompile Include="Prefs_NotificationsPage.cpp" />
+    <ClCompile Include="PrefsDlg.cpp" />
+    <ClCompile Include="Query.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="ServerList.cpp" />
+    <ClCompile Include="ServerMonitor.cpp" />
+    <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextInputView.cpp" />
+    <ClCompile Include="TextQueue.cpp" />
+    <ClCompile Include="TextQueueFrm.cpp" />
+    <ClCompile Include="Transfers.cpp" />
+    <ClCompile Include="TransfersFrm.cpp" />
+    <ClCompile Include="UserIdentityDlg.cpp" />
+    <ClCompile Include="UserList.cpp" />
+    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="include\HydraControls\HydraPaneContainer.cpp" />
+    <ClCompile Include="include\HydraControls\HydraSplitter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="AddNetworkDlg.h" />
+    <ClInclude Include="Channel.h" />
+    <ClInclude Include="ChannelListDlg.h" />
+    <ClInclude Include="ChannelMonitor.h" />
+    <ClInclude Include="ChannelPropertiesDlg.h" />
+    <ClInclude Include="ChildCommon.h" />
+    <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="CLogger.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="ConnectDlg.h" />
+    <ClInclude Include="DCCTransfer.h" />
+    <ClInclude Include="include\dllversion\dllversion.h" />
+    <ClInclude Include="DNSResolver.h" />
+    <ClInclude Include="EditBuddyGroupDlg.h" />
+    <ClInclude Include="EditNotificationDlg.h" />
+    <ClInclude Include="EditServerDetailsDlg.h" />
+    <ClInclude Include="EventLog.h" />
+    <ClInclude Include="EventLogFrm.h" />
+    <ClInclude Include="EventManager.h" />
+    <ClInclude Include="FavoritesDlg.h" />
+    <ClInclude Include="include\FixedMDIChild.h" />
+    <ClInclude Include="include\FixedMDICommandBar.h" />
+    <ClInclude Include="GUIControls.h" />
+    <ClInclude Include="GUIHelpers.h" />
+    <ClInclude Include="HeaderView.h" />
+    <ClInclude Include="HidingMDIWindow.h" />
+    <ClInclude Include="HydraIRC.h" />
+    <ClInclude Include="include\HydraIRCCommon.h" />
+    <ClInclude Include="HydraIRCTypes.h" />
+    <ClInclude Include="Identd.h" />
+    <ClInclude Include="InfoView.h" />
+    <ClInclude Include="irc.h" />
+    <ClInclude Include="Listener.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MRUMDITab.h" />
+    <ClInclude Include="MsgView.h" />
+    <ClInclude Include="Notification.h" />
+    <ClInclude Include="Output.h" />
+    <ClInclude Include="PluginManager.h" />
+    <ClInclude Include="Prefs.h" />
+    <ClInclude Include="Prefs_BuddyGroupsPage.h" />
+    <ClInclude Include="Prefs_CommandProfilesPage.h" />
+    <ClInclude Include="Prefs_FiltersPage.h" />
+    <ClInclude Include="Prefs_HighlightingPage.h" />
+    <ClInclude Include="Prefs_IdentitiesPage.h" />
+    <ClInclude Include="Prefs_LoggingPage.h" />
+    <ClInclude Include="Prefs_MessagesPage.h" />
+    <ClInclude Include="Prefs_MiscPage.h" />
+    <ClInclude Include="Prefs_NotificationsPage.h" />
+    <ClInclude Include="PrefsDlg.h" />
+    <ClInclude Include="PrefsPage.h" />
+    <ClInclude Include="Query.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerList.h" />
+    <ClInclude Include="ServerMonitor.h" />
+    <ClInclude Include="SingleInstance.h" />
+    <ClInclude Include="Socket.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TextInputView.h" />
+    <ClInclude Include="TextQueue.h" />
+    <ClInclude Include="TextQueueFrm.h" />
+    <ClInclude Include="Transfers.h" />
+    <ClInclude Include="TransfersFrm.h" />
+    <ClInclude Include="UserIdentityDlg.h" />
+    <ClInclude Include="UserList.h" />
+    <ClInclude Include="Utility.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="include\dockingwindows\dbstate.h" />
+    <ClInclude Include="include\dockingwindows\DDTracker.h" />
+    <ClInclude Include="include\dockingwindows\DockingBox.h" />
+    <ClInclude Include="include\dockingwindows\DockingFocus.h" />
+    <ClInclude Include="include\dockingwindows\DockingFrame.h" />
+    <ClInclude Include="include\dockingwindows\DockingWindow.h" />
+    <ClInclude Include="include\dockingwindows\DockMisc.h" />
+    <ClInclude Include="include\dockingwindows\DWAutoHide.h" />
+    <ClInclude Include="include\dockingwindows\dwstate.h" />
+    <ClInclude Include="include\dockingwindows\ExtDockingWindow.h" />
+    <ClInclude Include="include\dockingwindows\FlyingTabs.h" />
+    <ClInclude Include="include\dockingwindows\PackageWindow.h" />
+    <ClInclude Include="include\dockingwindows\SimpleSplitterBar.h" />
+    <ClInclude Include="include\dockingwindows\ssec.h" />
+    <ClInclude Include="include\dockingwindows\sstate.h" />
+    <ClInclude Include="include\dockingwindows\TabDockingBox.h" />
+    <ClInclude Include="include\dockingwindows\VC7LikeCaption.h" />
+    <ClInclude Include="include\dockingwindows\WndFrmPkg.h" />
+    <ClInclude Include="include\tabctrls\atlgdix.h" />
+    <ClInclude Include="include\tabctrls\CustomTabCtrl.h" />
+    <ClInclude Include="include\tabctrls\DotNetTabCtrl.h" />
+    <ClInclude Include="include\tabctrls\DynamicDialogTemplate.h" />
+    <ClInclude Include="include\tabctrls\ListViewNoFlicker.h" />
+    <ClInclude Include="include\tabctrls\PlainTextView.h" />
+    <ClInclude Include="include\tabctrls\SimpleDlgTabCtrls.h" />
+    <ClInclude Include="include\tabctrls\SimpleTabCtrls.h" />
+    <ClInclude Include="include\tabctrls\TabbedDockingWindow.h" />
+    <ClInclude Include="include\tabctrls\TabbedFrame.h" />
+    <ClInclude Include="include\tabctrls\TabbedMDI.h" />
+    <ClInclude Include="include\tabctrls\TabbedMDIMessages.h" />
+    <ClInclude Include="include\tabctrls\TabbedMDISave.h" />
+    <ClInclude Include="include\dlgcontainer\DlgContainer.h" />
+    <ClInclude Include="include\API_Basic.h" />
+    <ClInclude Include="include\API_CommandProcessor.h" />
+    <ClInclude Include="include\API_GUI.h" />
+    <ClInclude Include="include\taskbaricon\TaskBarIcon.h" />
+    <ClInclude Include="include\propertylist\PropertyItem.h" />
+    <ClInclude Include="include\propertylist\PropertyItemEditors.h" />
+    <ClInclude Include="include\propertylist\PropertyItemImpl.h" />
+    <ClInclude Include="include\propertylist\PropertyList.h" />
+    <ClInclude Include="include\asyncmessagepump\ASyncMessagePump.h" />
+    <ClInclude Include="include\CBufferedFile.h" />
+    <ClInclude Include="include\CIDManager.h" />
+    <ClInclude Include="include\CList.h" />
+    <ClInclude Include="include\CObjectManager.h" />
+    <ClInclude Include="include\commandbarxp\atlctrlxp.h" />
+    <ClInclude Include="include\commandbarxp\atlctrlxp2.h" />
+    <ClInclude Include="include\HydraControls\HydraPaneContainer.h" />
+    <ClInclude Include="include\HydraControls\HydraSplitter.h" />
+    <ClInclude Include="include\gradientlabel\GradientLabel.h" />
+    <ClInclude Include="include\altered_wtl_includes\8.0\atlctrls.h" />
+    <ClInclude Include="include\altered_wtl_includes\8.0\atlctrlw.h" />
+    <ClInclude Include="include\treelist\TreeListView.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\channel1.ico" />
+    <Image Include="res\channelm.ico" />
+    <Image Include="res\HydraIRC.ico" />
+    <Image Include="res\HydraIRCDoc.ico" />
+    <Image Include="res\ico00001.ico" />
+    <Image Include="res\ico00002.ico" />
+    <Image Include="res\ico00003.ico" />
+    <Image Include="res\ico00004.ico" />
+    <Image Include="res\ico00005.ico" />
+    <Image Include="res\ico00006.ico" />
+    <Image Include="res\ico00007.ico" />
+    <Image Include="res\ico00008.ico" />
+    <Image Include="res\ico00009.ico" />
+    <Image Include="res\ico00010.ico" />
+    <Image Include="res\ico00011.ico" />
+    <Image Include="res\ico00013.ico" />
+    <Image Include="res\ico00014.ico" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\icon2.ico" />
+    <Image Include="res\idr_main.ico" />
+    <Image Include="res\output1.ico" />
+    <Image Include="res\serverlist.bmp" />
+    <Image Include="res\tabicons.bmp" />
+    <Image Include="res\toolbar.bmp" />
+    <Image Include="res\transfer.bmp" />
+    <Image Include="res\userlist.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\HydraIRC.exe.manifest">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="HydraIRC.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\reference docs\color.txt" />
+    <None Include="..\reference docs\CTCP.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\reference docs\dcc.txt" />
+    <None Include="..\Reference Docs\draft-mirashi-url-irc-01.txt" />
+    <None Include="..\Reference Docs\IRC-2 Numeric List.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\Reference Docs\irc-numerics-conflicts.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\reference docs\rfc1413.txt" />
+    <None Include="..\reference docs\rfc2810.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\reference docs\rfc2811.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\reference docs\rfc2812.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\reference docs\rfc2813.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\SDK\API_Docs.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\CHANGES.TXT" />
+    <None Include="..\DEVELOPER.TXT" />
+    <None Include="..\Docs\Docs.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="HydraIRC.xml" />
+    <None Include="HydraIRC_Log.txt" />
+    <None Include="..\LICENSE.TXT" />
+    <None Include="Notes.txt" />
+    <None Include="..\Distribution\Release\Readme.txt" />
+    <None Include="..\TODO.TXT" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libs\HydraIRCPlugin\HydraIRCPlugin.vcxproj">
+      <Project>{ee874e3b-5e71-444d-9ef1-44f32d53a1ba}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="libs\libxml2\win32\dsp\libxml2.vcxproj">
+      <Project>{08bc321f-3476-43f9-9989-fd9b1da2a079}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="HydraIRC.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
