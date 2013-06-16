@@ -2965,7 +2965,7 @@ void IRCServer::Parse( char *processstr )
               // while since the last PRIVMSG from that user
               if ((!pQuery) || (pQuery && pQuery->m_TicksSinceLastBufferAdd > INTPREF(PREF_nQueryNotifyReactivateDelay)))
               {
-                m_pLastNE = g_pNotificationManager->NotificationEvent(NE_PRIVMSG,m_pDetails->m_NetworkID,tmpnick);
+                m_pLastNE = g_pNotificationManager->NotificationEvent(NE_PRIVMSG,m_pDetails->m_NetworkID,m_Variables);
                 if (m_pLastNE && m_pLastNE->m_Flags & NE_FLAG_LOGINEVENTLOG)
                 {
                   g_pEventLogManager->BuildMessage(g_DefaultStrings[DEFSTR_User_PrivMsg],tmpnick,UseEmptyString(b));
@@ -3345,7 +3345,7 @@ void IRCServer::Parse( char *processstr )
             // while since the last PRIVMSG from that user
             if ((!pQuery) || (pQuery && pQuery->m_TicksSinceLastBufferAdd > INTPREF(PREF_nQueryNotifyReactivateDelay)))
             {
-              m_pLastNE  = g_pNotificationManager->NotificationEvent(NE_PRIVMSG,m_pDetails->m_NetworkID,tmpnick);
+              m_pLastNE  = g_pNotificationManager->NotificationEvent(NE_PRIVMSG,m_pDetails->m_NetworkID,m_Variables);
               if (m_pLastNE && m_pLastNE->m_Flags & NE_FLAG_LOGINEVENTLOG)
               {
                 g_pEventLogManager->BuildMessage(g_DefaultStrings[DEFSTR_User_PrivMsg],tmpnick,UseEmptyString(rest));

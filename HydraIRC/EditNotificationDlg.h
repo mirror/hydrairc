@@ -54,6 +54,7 @@ private:
   CButton m_SystemSoundCtrl;
   CButton m_SoundFileCtrl;
   CButton m_FlashTaskBarCtrl;
+  CButton m_NotificationCtrl;
   CButton m_HighlightWholeLineCtrl;
   CButton m_HighlightCaseSensitiveCtrl;
   CButton m_LogInEventLogCtrl;

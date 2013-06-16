@@ -153,7 +153,7 @@ void NotificationManager::DeleteAll( void )
   }
 }
 
-void NotificationManager::DoNotification(NotificationPrefInfo_t *pNPI)
+void NotificationManager::DoNotification(NotificationPrefInfo_t *pNPI, LPTSTR lpszTitle, LPTSTR lpszText)
 {
   // convert pNPI to pNE and call the other DoNotification
   if (!pNPI)
@@ -170,7 +170,7 @@ void NotificationManager::DoNotification(NotificationPrefInfo_t *pNPI)
     pNE->m_UserData = NULL; // overridden depending on EventCode
     pNE->m_Flags = pNPI->m_Flags;
 
-    DoNotification(pNE);
+    DoNotification(pNE, lpszTitle, lpszText);
 
     free(pNE);
   }
@@ -250,7 +250,7 @@ void NotificationManager::PlaySoundID(int SoundID)
 }
 
 
-void NotificationManager::DoNotification(NotificationEvent_t *pNE)
+void NotificationManager::DoNotification(NotificationEvent_t *pNE, LPTSTR lpszTitle, LPTSTR lpszText)
 {
   if (pNE->m_Flags & NE_FLAG_DISABLED)
     return;
@@ -294,6 +294,10 @@ void NotificationManager::DoNotification(NotificationEvent_t *pNE)
     FlashWindowEx(&fwi);
   }
 
+  if (pNE->m_Flags & NE_FLAG_NOTIFICATION)
+  {
+    g_pMainWnd->m_TI.SetMessage(lpszTitle, lpszText);	
+  }
 }
 
 /** Play a sound for an event if one has been configured.
@@ -310,7 +314,7 @@ NotificationEvent_t *NotificationManager::NotificationEvent(int EventCode, int N
   BOOL FoundEvent = FALSE;
   NotificationEvent_t *pNE = NULL;
   IRCUserGroup *pGroup = NULL;
-  char *Nick = NULL;
+  char *Nick = NULL, *Message = NULL;
 
   // do an init for the rest of this part..
   switch(EventCode)
@@ -334,7 +338,12 @@ NotificationEvent_t *NotificationManager::NotificationEvent(int EventCode, int N
     case NE_DCCFILESENDFAILED:
     case NE_CTCPPING:
 
-      Nick = (char *)Data;
+      if (EventCode == NE_PRIVMSG) {
+        Nick = ((char **)Data)[VID_NICK];
+        Message = ((char **)Data)[VID_ALL];
+      } else
+        Nick = (char *)Data;
+
       if (Nick)
       {
         pGroup = g_pPrefs->m_CustomUserGroups.FindUserGroup(Nick,NetworkID);
@@ -394,7 +403,7 @@ NotificationEvent_t *NotificationManager::NotificationEvent(int EventCode, int N
               // don't just match the group! match the user in it to the nick too!
               if (pGroup->FindUser(Nick))
               {
-                DoNotification(pNE);
+                DoNotification(pNE, Nick, Message);
                 FoundEvent = TRUE;
               }
             }
@@ -406,7 +415,7 @@ NotificationEvent_t *NotificationManager::NotificationEvent(int EventCode, int N
               // so make sure pass == 2
               if (pass==2 && pNE->m_UserData == NULL)
               {
-                DoNotification(pNE);
+                DoNotification(pNE, Nick, Message);
                 FoundEvent = TRUE;
               }
             }

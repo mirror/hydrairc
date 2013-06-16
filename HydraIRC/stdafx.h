@@ -74,7 +74,7 @@
 
 // Change these values to use different versions
 #define WINVER		0x0500
-#define _WIN32_WINNT	0x0400 // only needed for WM_MOUSEWHEEL
+#define _WIN32_WINNT	0x0500 // needed for WM_MOUSEWHEEL and notification
 #define _WIN32_IE	0x0501
 #define _RICHEDIT_VER	0x0300 // 0x0300
 

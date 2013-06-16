@@ -57,8 +57,8 @@ public:
 
    CTaskBarIcon() : m_hMenu(NULL), m_iTaskbarRestartMsg(0)
    {
-      ::ZeroMemory(&m_nid, sizeof(m_nid));
-      m_nid.cbSize = sizeof(m_nid); 
+      ::ZeroMemory(&m_nid, 488);
+      m_nid.cbSize = 488;
       m_nid.uCallbackMessage = WM_TASKBARICON;
       m_iTaskbarRestartMsg = ::RegisterWindowMessage(TEXT("TaskbarCreated"));
    }
@@ -123,6 +123,18 @@ public:
       ATLASSERT(::IsMenu(hMenu));
       m_hMenu = hMenu; 
    }
+   BOOL SetMessage(LPTSTR lpszTitle, LPTSTR lpszText)
+   {
+     // Check if we are minimized
+     if (!::IsWindow(m_nid.hWnd)) return FALSE;
+     
+     // Update tray message
+     ::lstrcpyn(m_nid.szInfoTitle, (lpszTitle != NULL ? lpszTitle : _T("")), sizeof(m_nid.szInfoTitle)/sizeof(TCHAR));
+     ::lstrcpyn(m_nid.szInfo, (lpszText != NULL ? lpszText : _T("")), sizeof(m_nid.szInfo)/sizeof(TCHAR));
+     m_nid.uTimeout = 10;
+     m_nid.uFlags = NIF_ICON | NIF_INFO; 
+     return ::Shell_NotifyIcon(NIM_MODIFY, &m_nid);
+	}
    BOOL AddTaskBarIcon()
    {
       ATLASSERT(::IsWindow(m_nid.hWnd));

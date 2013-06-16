@@ -144,14 +144,14 @@ private:
   CSimpleArray<NotificationEvent_t *> m_NotificationEventList;
   IDManager m_SourceIDs;
 
-  void DoNotification(NotificationEvent_t *pAEvent);
+  void DoNotification(NotificationEvent_t *pAEvent, LPTSTR lpszTitle = 0, LPTSTR lpszText = 0);
 
 public:
   ~NotificationManager( void );
   NotificationEvent_t *NotificationEvent(int EventCode, int NetworkID, const void *Data);
 
   // do a notification via a NotificationPrefInfo_t struct.
-  void DoNotification(NotificationPrefInfo_t *pNPI);
+  void DoNotification(NotificationPrefInfo_t *pNPI, LPTSTR lpszTitle = 0, LPTSTR lpszText = 0);
 
   // pass the return value as a parmater to Add(), return -1 if error
   int ObtainSourceID(void);

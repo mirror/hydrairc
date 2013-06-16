@@ -149,7 +149,7 @@ typedef CSimpleArray<int> intarray;
 #define THID_DNSRESOLVER 1
 
 #define FONT_MAX_NAME_LEN             256 // TODO: rename to MAX_FONT_NAME_LEN
-#define MAX_COMMAND_PROFILE_LEN       1024
+#define MAX_COMMAND_PROFILE_LEN       32768
 #define MAX_COMMAND_PROFILE_NAME_LEN  128
 
 #define NETWORK_UNKNOWN 0
@@ -214,6 +214,7 @@ typedef struct FontInfo_s {
 #define NE_FLAG_FLASHTASKBAR          (1<<4)
 #define NE_FLAG_HIGHLIGHT             (1<<5)
 #define NE_FLAG_LOGINEVENTLOG         (1<<6) // default for new events: enabled!
+#define NE_FLAG_NOTIFICATION          (1<<7)
 
 
 #define HIGHLIGHT_NONE          (0)
@@ -523,7 +524,9 @@ enum PrefIDs {
   PREF_bConsoleLogging,
   PREF_bSocketLogging,
   PREF_bCrossNetworkNoticeForwarding,
+  PREF_bAlwaysShowTrayIcon,
   PREF_bMinimizeToSysTray,
+  PREF_bStartMinimized,
   PREF_bCreateQueryWindowsAutomatically,
   PREF_bCreateQueryWindowsHidden,
   PREF_bRestrictQueriesToQueryWindows,
