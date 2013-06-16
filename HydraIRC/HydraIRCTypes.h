@@ -149,7 +149,7 @@ typedef CSimpleArray<int> intarray;
 #define THID_DNSRESOLVER 1
 
 #define FONT_MAX_NAME_LEN             256 // TODO: rename to MAX_FONT_NAME_LEN
-#define MAX_COMMAND_PROFILE_LEN       1024
+#define MAX_COMMAND_PROFILE_LEN       32768
 #define MAX_COMMAND_PROFILE_NAME_LEN  128
 
 #define NETWORK_UNKNOWN 0
